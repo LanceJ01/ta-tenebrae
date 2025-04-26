@@ -23,6 +23,30 @@ public:
         : item_name(name), item_description(description) {}
 };
 
+class Door {
+private:
+    bool locked;
+    std::string required_key;
+
+public:
+    Door(const std::string &key = "") : locked(!key.empty()), required_key(to_lowercase(key)) {}
+
+    bool is_locked() const { return locked; }
+
+    bool can_unlock(const std::vector<Item> &inventory) const {
+        for (const auto &item : inventory) {
+            if (to_lowercase(item.item_name) == required_key) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    void unlock() { locked = false; }
+
+    std::string get_required_key() const { return required_key; }
+};
+
 class Player {
 public:
     std::vector<Item> player_inventory;
@@ -49,7 +73,7 @@ public:
     std::string room_description;
     std::string search_description;
     std::map<std::string, Room *> room_exits;
-    std::map<std::string, std::string> locked_exits;
+    std::map<std::string, Door> doors;
     std::vector<Item> items;
     bool has_been_searched = false;
     std::string revealed_item_name;
@@ -64,27 +88,16 @@ public:
         return i != room_exits.end() ? i->second : nullptr;
     }
 
-    void lock_exit(const std::string &direction, const std::string &required_key) {
-        locked_exits[direction] = to_lowercase(required_key);
+    void add_door(const std::string &direction, const Door &door) { doors[direction] = door; }
+
+    bool has_door(const std::string &direction) const {
+        return doors.find(direction) != doors.end();
     }
 
-    bool is_exit_locked(const std::string &direction) const {
-        return locked_exits.find(direction) != locked_exits.end();
+    Door *get_door(const std::string &direction) {
+        auto it = doors.find(direction);
+        return it != doors.end() ? &(it->second) : nullptr;
     }
-
-    bool can_unlock(const std::string &direction, const std::vector<Item> &inventory) const {
-        auto i = locked_exits.find(direction);
-        if (i != locked_exits.end()) {
-            for (const auto &item : inventory) {
-                if (to_lowercase(item.item_name) == i->second) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    void unlock_exit(const std::string &direction) { locked_exits.erase(direction); }
 
     void print_description() { std::cout << room_description << "\n"; }
 
@@ -126,28 +139,47 @@ public:
     }
 };
 
-void attempt_move(Room *&room_current, const std::string &direction, Player &player) {
-    if (room_current->get_exit(direction)) {
-        if (room_current->is_exit_locked(direction)) {
-            if (room_current->can_unlock(direction, player.player_inventory)) {
-                std::cout << "You use a key and unlock the door...\n\n";
-                room_current->unlock_exit(direction);
+void attempt_move(Room *&room_current, const std::string &direction) {
+    Room *next_room = room_current->get_exit(direction);
+    if (!next_room) {
+        std::cout << "You can't go that way.\n\n";
+        return;
+    }
+
+    if (room_current->has_door(direction)) {
+        Door *door = room_current->get_door(direction);
+        if (door && door->is_locked()) {
+            std::cout << "The door is locked. Maybe there's a key nearby...\n\n";
+            return;
+        }
+    }
+
+    room_current = next_room;
+    room_current->print_description();
+}
+
+void try_open_door(Room *room_current, Player &player) {
+    for (auto &[direction, door] : room_current->doors) {
+        if (door.is_locked()) {
+            if (door.can_unlock(player.player_inventory)) {
+                std::cout << "You use the " << door.get_required_key()
+                          << " to unlock the door.\n\n";
+                door.unlock();
+                return; // unlock just one door at a time
             } else {
-                std::cout << "The door is locked. Maybe there's a key nearby...\n\n";
+                std::cout << "The door is locked.\n\n";
                 return;
             }
         }
-        room_current = room_current->get_exit(direction);
-        room_current->print_description();
-    } else {
-        std::cout << "You can't go that way.\n\n";
     }
+    std::cout << "There is no locked door here that you can open.\n\n";
 }
 
 // Global items
 std::map<std::string, Item> item_library = {
     {"rusted knife", Item("rusted knife", descriptions::ITEM_RUSTED_KNIFE)},
-    {"cell key", Item("cell key", descriptions::ITEM_CELL_KEY)}};
+    {"cell key", Item("cell key", descriptions::ITEM_CELL_KEY)},
+    {"room key", Item("room key", descriptions::ITEM_ROOM_KEY)}};
 
 // Functions
 void print_centered(const std::string &text, size_t width = 80) {
@@ -174,8 +206,7 @@ std::string extract_direction(const std::string &input) {
 }
 
 void start_new_game() {
-    std::cout << "\nInitializing TENEBRAE...\n\nYou wake up in a room dimly "
-                 "lit by a torch...\n";
+    std::cout << "\nInitializing TENEBRAE...\n\nYou wake up in dimly lit room...\n";
 
     Room room_start(descriptions::ROOM_START, descriptions::SEARCH_START);
     Room room_start_north(descriptions::ROOM_START_NORTH);
@@ -188,13 +219,30 @@ void start_new_game() {
     Room room_start_northwest(descriptions::ROOM_START_NORTHWEST);
     Room room_start_southeast(descriptions::ROOM_START_SOUTHEAST);
     Room room_start_southwest(descriptions::ROOM_START_SOUTHWEST);
-    Room room_prison_hallway(descriptions::ROOM_PRISON_HALLWAY);
+    Room room_prison_hallway_1(descriptions::ROOM_PRISON_HALLWAY_1);
+    Room room_prison_hallway_2(descriptions::ROOM_PRISON_HALLWAY_2);
+    Room room_prison_hallway_3(descriptions::ROOM_PRISON_HALLWAY_3);
+    Room room_prison_hallway_4(descriptions::ROOM_PRISON_HALLWAY_4,
+                               descriptions::SEARCH_PRISON_HALLWAY_4);
+    Room room_prison_hallway_5(descriptions::ROOM_PRISON_HALLWAY_5);
+    Room room_prison_1_middle(descriptions::ROOM_PRISON_1_MIDDLE);
+    Room room_prison_1_north(descriptions::ROOM_PRISON_1_NORTH);
+    Room room_prison_1_south(descriptions::ROOM_PRISON_1_SOUTH);
+    Room room_prison_1_east(descriptions::ROOM_PRISON_1_EAST);
+    Room room_prison_1_west(descriptions::ROOM_PRISON_1_WEST);
+    Room room_prison_1_northeast(descriptions::ROOM_PRISON_1_NORTHEAST);
+    Room room_prison_1_northwest(descriptions::ROOM_PRISON_1_NORTHWEST);
+    Room room_prison_1_southeast(descriptions::ROOM_PRISON_1_SOUTHEAST,
+                                 descriptions::SEARCH_ROOM_PRISON_1_SOUTHEAST);
+    Room room_prison_1_southwest(descriptions::ROOM_PRISON_1_SOUTHWEST);
 
+    // Starting Room Area
     room_start.add_room_exit("north", &room_start_north);
     room_start.add_room_exit("south", &room_start_south);
     room_start.add_room_exit("east", &room_start_east);
     room_start.add_room_exit("west", &room_start_west);
 
+    room_start_north.add_door("north", Door("cell key"));
     room_start_north.add_room_exit("south", &room_start);
     room_start_north.add_room_exit("east", &room_start_northeast);
     room_start_north.add_room_exit("west", &room_start_northwest);
@@ -217,13 +265,49 @@ void start_new_game() {
     room_start_east.add_room_exit("north", &room_start_northeast);
     room_start_east.add_room_exit("south", &room_start_southeast);
 
+    // Items in Starting Room
     room_start_south.add_item(item_library["cell key"]);
     room_start_east.add_item(item_library["rusted knife"]);
 
-    room_start_north.lock_exit("north", "cell key");
+    // Prison Hallway Area
+    room_start_north.add_room_exit("north", &room_prison_hallway_1);
+    room_prison_hallway_1.add_room_exit("south", &room_start_north);
+    room_prison_hallway_1.add_room_exit("north", &room_prison_hallway_2);
+    room_prison_hallway_2.add_room_exit("south", &room_prison_hallway_1);
+    room_prison_hallway_2.add_room_exit("north", &room_prison_hallway_3);
+    room_prison_hallway_3.add_room_exit("south", &room_prison_hallway_2);
+    room_prison_hallway_3.add_room_exit("north", &room_prison_hallway_4);
+    room_prison_hallway_4.add_room_exit("south", &room_prison_hallway_3);
+    room_prison_hallway_4.add_room_exit("north", &room_prison_1_south);
+    room_prison_hallway_3.add_room_exit("west", &room_prison_hallway_5);
+    room_prison_hallway_5.add_room_exit("east", &room_prison_hallway_3);
 
-    room_start_north.add_room_exit("north", &room_prison_hallway);
-    room_prison_hallway.add_room_exit("south", &room_start_north);
+    // Prison Room 1
+    room_prison_1_south.add_room_exit("south", &room_prison_hallway_4);
+    room_prison_1_south.add_room_exit("north", &room_prison_1_middle);
+    room_prison_1_south.add_room_exit("east", &room_prison_1_southeast);
+    room_prison_1_south.add_room_exit("west", &room_prison_1_southwest);
+    room_prison_1_middle.add_room_exit("south", &room_prison_1_south);
+    room_prison_1_middle.add_room_exit("east", &room_prison_1_east);
+    room_prison_1_middle.add_room_exit("west", &room_prison_1_west);
+    room_prison_1_middle.add_room_exit("north", &room_prison_1_north);
+    room_prison_1_north.add_room_exit("south", &room_prison_1_middle);
+    room_prison_1_north.add_room_exit("east", &room_prison_1_northeast);
+    room_prison_1_north.add_room_exit("west", &room_prison_1_northwest);
+    room_prison_1_west.add_room_exit("north", &room_prison_1_northwest);
+    room_prison_1_west.add_room_exit("east", &room_prison_1_middle);
+    room_prison_1_west.add_room_exit("south", &room_prison_1_southwest);
+    room_prison_1_east.add_room_exit("north", &room_prison_1_northeast);
+    room_prison_1_east.add_room_exit("west", &room_prison_1_middle);
+    room_prison_1_east.add_room_exit("south", &room_prison_1_southeast);
+    room_prison_1_northeast.add_room_exit("west", &room_prison_1_north);
+    room_prison_1_northeast.add_room_exit("south", &room_prison_1_east);
+    room_prison_1_northwest.add_room_exit("east", &room_prison_1_north);
+    room_prison_1_northwest.add_room_exit("south", &room_prison_1_west);
+    room_prison_1_southeast.add_room_exit("north", &room_prison_1_east);
+    room_prison_1_southeast.add_room_exit("west", &room_prison_1_south);
+    room_prison_1_southwest.add_room_exit("north", &room_prison_1_west);
+    room_prison_1_southwest.add_room_exit("east", &room_prison_1_south);
 
     Room *room_current = &room_start;
     Player player;
@@ -262,14 +346,21 @@ void start_new_game() {
             }
         } else if (player_action.find("inventory") != std::string::npos) {
             player.print_inventory();
+
+        } else if (player_action.find("open") != std::string::npos ||
+                   player_action.find("use key") != std::string::npos) {
+            try_open_door(room_current, player);
+
         } else if (!extract_direction(player_action).empty()) {
             std::string dir = extract_direction(player_action);
-            attempt_move(room_current, dir, player);
+            attempt_move(room_current, dir);
+
         } else if (player_action == "quit" || player_action == "exit" ||
                    player_action == "quit game") {
             std::cout << "You decide it's time to stop. Returning to the Main "
                          "Menu.\n";
             break;
+
         } else {
             std::cout << "You can't do that right now. \nTry search, "
                          "inventory, north, south, east, west, or quit\n";
