@@ -1,32 +1,13 @@
+#include "descriptions.hpp"
 #include <algorithm>
 #include <iostream>
 #include <map>
-
 #include <vector>
 
-void print_centered(const std::string &text, size_t width = 80) {
-    size_t pad = (width - text.length()) / 2;
-    if (pad > 0) std::cout << std::string(pad, ' ');
-    std::cout << text << '\n';
-}
-
-std::string to_lowercase(const std::string &input) {
-    std::string result = input;
-    std::transform(result.begin(), result.end(), result.begin(),
-                   [](unsigned char c) { return std::tolower(c); });
-    return result;
-}
-
-std::string extract_direction(const std::string &input) {
-    std::vector<std::string> direction_words = {"north", "south", "east", "west"};
-    for (const auto &dir : direction_words) {
-        if (input.find(dir) != std::string::npos) {
-            return dir;
-        }
-    }
-    return "";
-}
-
+// Func Prototypes
+void print_centered(const std::string &text, size_t width);
+std::string to_lowercase(const std::string &input);
+std::string extract_direction(const std::string &input);
 void show_menu();
 void start_new_game();
 void quit_game(bool &game_running);
@@ -142,7 +123,7 @@ public:
             return true;
         }
         return false;
-    };
+    }
 };
 
 void attempt_move(Room *&room_current, const std::string &direction, Player &player) {
@@ -165,34 +146,49 @@ void attempt_move(Room *&room_current, const std::string &direction, Player &pla
 
 // Global items
 std::map<std::string, Item> item_library = {
-    {"rusted knife",
-     Item("rusted knife", "A slightly dull rusted knife. Could be useful later...")},
-    {"cell key", Item("cell key", "A small iron key.")}};
+    {"rusted knife", Item("rusted knife", descriptions::ITEM_RUSTED_KNIFE)},
+    {"cell key", Item("cell key", descriptions::ITEM_CELL_KEY)}};
+
+// Functions
+void print_centered(const std::string &text, size_t width = 80) {
+    size_t pad = (width - text.length()) / 2;
+    if (pad > 0) std::cout << std::string(pad, ' ');
+    std::cout << text << '\n';
+}
+
+std::string to_lowercase(const std::string &input) {
+    std::string result = input;
+    std::transform(result.begin(), result.end(), result.begin(),
+                   [](unsigned char c) { return std::tolower(c); });
+    return result;
+}
+
+std::string extract_direction(const std::string &input) {
+    std::vector<std::string> direction_words = {"north", "south", "east", "west"};
+    for (const auto &dir : direction_words) {
+        if (input.find(dir) != std::string::npos) {
+            return dir;
+        }
+    }
+    return "";
+}
 
 void start_new_game() {
     std::cout << "\nInitializing TENEBRAE...\n\nYou wake up in a room dimly "
                  "lit by a torch...\n";
 
-    Room room_start("You stand in the middle of the cell room...\n",
-                    "You look around the room and see a cell door to the NORTH "
-                    "wall, a dirty ragged bed on the floor to the EAST wall, "
-                    "and a dirty bucket to the SOUTH wall.\n");
-    Room room_start_north("You face the cell door...\n");
-    Room room_start_south("You look down and see a bucket filled with who knows what...\n",
-                          "You hesitate before plunging your hand into the sludge-filled bucket. "
-                          "You feel something cold and slimy...\n");
+    Room room_start(descriptions::ROOM_START, descriptions::SEARCH_START);
+    Room room_start_north(descriptions::ROOM_START_NORTH);
+    Room room_start_south(descriptions::ROOM_START_SOUTH, descriptions::SEARCH_SOUTH);
     room_start_south.revealed_item_name = "cell key";
-    Room room_start_east("You look down at the dirty ragged bed... it seems just a minute ago "
-                         "you were having the worst nightmare...\n",
-                         "You feel under the bed...\n");
+    Room room_start_east(descriptions::ROOM_START_EAST, descriptions::SEARCH_EAST);
     room_start_east.revealed_item_name = "rusted knife";
-    Room room_start_west("You stare blankly at the wall...\n");
-    Room room_start_northeast("You face the NORTH EAST corner of the room.\n");
-    Room room_start_northwest("You face the NORTH WEST corner of the room.\n");
-    Room room_start_southeast("You face the SOUTH EAST corner of the room.\n");
-    Room room_start_southwest("You face the SOUTH WEST corner of the room.\n");
-    Room room_prison_hallway("You step through the cell door into a dark hallway. The hallway "
-                             "stretches into the darkness...\n");
+    Room room_start_west(descriptions::ROOM_START_WEST);
+    Room room_start_northeast(descriptions::ROOM_START_NORTHEAST);
+    Room room_start_northwest(descriptions::ROOM_START_NORTHWEST);
+    Room room_start_southeast(descriptions::ROOM_START_SOUTHEAST);
+    Room room_start_southwest(descriptions::ROOM_START_SOUTHWEST);
+    Room room_prison_hallway(descriptions::ROOM_PRISON_HALLWAY);
 
     room_start.add_room_exit("north", &room_start_north);
     room_start.add_room_exit("south", &room_start_south);
@@ -290,7 +286,7 @@ void show_menu() {
     print_centered("    [1] New Game      ");
     print_centered("    [2] Quit          ");
     std::cout << "\n";
-    print_centered("Enter 1 or 2");
+    print_centered("Enter [1] or [2]");
     print_centered(" <============================>\n");
 }
 
@@ -306,7 +302,12 @@ int main() {
     while (game_running) {
         show_menu();
         std::cout << "ACTION: ";
-        std::cin >> menu_choice;
+        if (!(std::cin >> menu_choice)) {
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cout << "Invalid input. Please enter 1 OR 2.\n";
+            continue;
+        }
         switch (menu_choice) {
         case 1:
             start_new_game();
