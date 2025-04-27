@@ -47,6 +47,40 @@ public:
     std::string get_required_key() const { return required_key; }
 };
 
+class Chest {
+private:
+    bool locked;
+    std::string required_key;
+    Item contained_item;
+    bool opened = false;
+
+public:
+    Chest(const Item &item, const std::string &key = "")
+        : locked(!key.empty()), required_key(to_lowercase(key)), contained_item(item) {}
+
+    bool is_locked() const { return locked; }
+
+    bool is_opened() const { return opened; }
+
+    bool can_unlock(const std::vector<Item> &inventory) const {
+        for (const auto &item : inventory) {
+            if (to_lowercase(item.item_name) == required_key) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    void unlock() { locked = false; }
+
+    Item open() {
+        opened = true;
+        return contained_item;
+    }
+
+    std::string get_required_key() const { return required_key; }
+};
+
 class Player {
 public:
     std::vector<Item> player_inventory;
@@ -76,6 +110,7 @@ public:
     std::map<std::string, Door> doors;
     std::vector<Item> items;
     bool has_been_searched = false;
+    Chest *chest = nullptr;
     std::string revealed_item_name;
 
     Room(const std::string &desc, const std::string &search = "")
@@ -98,6 +133,8 @@ public:
         auto it = doors.find(direction);
         return it != doors.end() ? &(it->second) : nullptr;
     }
+
+    void add_chest(Chest *new_chest) { chest = new_chest; }
 
     void print_description() { std::cout << room_description << "\n"; }
 
@@ -179,7 +216,10 @@ void try_open_door(Room *room_current, Player &player) {
 std::map<std::string, Item> item_library = {
     {"rusted knife", Item("rusted knife", descriptions::ITEM_RUSTED_KNIFE)},
     {"cell key", Item("cell key", descriptions::ITEM_CELL_KEY)},
-    {"room key", Item("room key", descriptions::ITEM_ROOM_KEY)}};
+    {"room key", Item("room key", descriptions::ITEM_ROOM_KEY)},
+    {"blood-stained key", Item("blood-stained key", descriptions::ITEM_BLOODSTAINED_KEY)},
+    {"Aegis' Thorn", Item("Aegis' Thorn", descriptions::ITEM_AEGIS_THORN)},
+    {"blood bottle", Item("blood bottle", descriptions::ITEM_BLOOD_BOTTLE)}};
 
 // Functions
 void print_centered(const std::string &text, size_t width = 80) {
@@ -211,9 +251,7 @@ void start_new_game() {
     Room room_start(descriptions::ROOM_START, descriptions::SEARCH_START);
     Room room_start_north(descriptions::ROOM_START_NORTH);
     Room room_start_south(descriptions::ROOM_START_SOUTH, descriptions::SEARCH_SOUTH);
-    room_start_south.revealed_item_name = "cell key";
     Room room_start_east(descriptions::ROOM_START_EAST, descriptions::SEARCH_EAST);
-    room_start_east.revealed_item_name = "rusted knife";
     Room room_start_west(descriptions::ROOM_START_WEST);
     Room room_start_northeast(descriptions::ROOM_START_NORTHEAST);
     Room room_start_northwest(descriptions::ROOM_START_NORTHWEST);
@@ -224,7 +262,9 @@ void start_new_game() {
     Room room_prison_hallway_3(descriptions::ROOM_PRISON_HALLWAY_3);
     Room room_prison_hallway_4(descriptions::ROOM_PRISON_HALLWAY_4,
                                descriptions::SEARCH_PRISON_HALLWAY_4);
-    Room room_prison_hallway_5(descriptions::ROOM_PRISON_HALLWAY_5);
+    Room room_prison_hallway_5(descriptions::ROOM_PRISON_HALLWAY_5,
+                               descriptions::SEARCH_PRISON_HALLWAY_5);
+    Room room_prison_hallway_7(descriptions::ROOM_PRISON_HALLWAY_7);
     Room room_prison_1_middle(descriptions::ROOM_PRISON_1_MIDDLE);
     Room room_prison_1_north(descriptions::ROOM_PRISON_1_NORTH);
     Room room_prison_1_south(descriptions::ROOM_PRISON_1_SOUTH);
@@ -235,14 +275,33 @@ void start_new_game() {
     Room room_prison_1_southeast(descriptions::ROOM_PRISON_1_SOUTHEAST,
                                  descriptions::SEARCH_ROOM_PRISON_1_SOUTHEAST);
     Room room_prison_1_southwest(descriptions::ROOM_PRISON_1_SOUTHWEST);
+    Room room_prison_hallway_6(descriptions::ROOM_PRISON_HALLWAY_6);
+    Room room_prison_2_southeast(descriptions::ROOM_PRISON_2_SOUTHEAST);
+    Room room_prison_2_south(descriptions::ROOM_PRISON_2_SOUTH);
+    Room room_prison_2_southwest(descriptions::ROOM_PRISON_2_SOUTHWEST);
+    Room room_prison_2_middle(descriptions::ROOM_PRISON_2_MIDDLE);
+    Room room_prison_2_west(descriptions::ROOM_PRISON_2_WEST);
+    Room room_prison_2_east(descriptions::ROOM_PRISON_2_EAST);
+    Room room_prison_2_north(descriptions::ROOM_PRISON_2_NORTH,
+                             descriptions::SEARCH_ROOM_PRISON_2_NORTH);
+    Room room_prison_2_northwest(descriptions::ROOM_PRISON_2_NORTHWEST,
+                                 descriptions::SEARCH_ROOM_PRISON_2_NORTHWEST);
+    Room room_prison_2_northeast(descriptions::ROOM_PRISON_2_NORTHEAST,
+                                 descriptions::SEARCH_ROOM_PRISON_2_NORTHEAST);
+    Room room_storage_1(descriptions::ROOM_STORAGE_1, descriptions::SEARCH_ROOM_STORAGE_1);
+
+    // Starting Room Area Items, Doors, Chests
+    room_start_north.add_door("north", Door("cell key"));
+    room_start_south.revealed_item_name = "cell key";
+    room_start_east.revealed_item_name = "rusted knife";
+    room_start_south.add_item(item_library["cell key"]);
+    room_start_east.add_item(item_library["rusted knife"]);
 
     // Starting Room Area
     room_start.add_room_exit("north", &room_start_north);
     room_start.add_room_exit("south", &room_start_south);
     room_start.add_room_exit("east", &room_start_east);
     room_start.add_room_exit("west", &room_start_west);
-
-    room_start_north.add_door("north", Door("cell key"));
     room_start_north.add_room_exit("south", &room_start);
     room_start_north.add_room_exit("east", &room_start_northeast);
     room_start_north.add_room_exit("west", &room_start_northwest);
@@ -265,10 +324,6 @@ void start_new_game() {
     room_start_east.add_room_exit("north", &room_start_northeast);
     room_start_east.add_room_exit("south", &room_start_southeast);
 
-    // Items in Starting Room
-    room_start_south.add_item(item_library["cell key"]);
-    room_start_east.add_item(item_library["rusted knife"]);
-
     // Prison Hallway Area
     room_start_north.add_room_exit("north", &room_prison_hallway_1);
     room_prison_hallway_1.add_room_exit("south", &room_start_north);
@@ -278,12 +333,21 @@ void start_new_game() {
     room_prison_hallway_3.add_room_exit("south", &room_prison_hallway_2);
     room_prison_hallway_3.add_room_exit("north", &room_prison_hallway_4);
     room_prison_hallway_4.add_room_exit("south", &room_prison_hallway_3);
-    room_prison_hallway_4.add_room_exit("north", &room_prison_1_south);
+    room_prison_hallway_4.add_room_exit("north", &room_prison_hallway_7);
     room_prison_hallway_3.add_room_exit("west", &room_prison_hallway_5);
     room_prison_hallway_5.add_room_exit("east", &room_prison_hallway_3);
+    room_prison_hallway_5.add_room_exit("west", &room_prison_hallway_6);
+    room_prison_hallway_6.add_room_exit("east", &room_prison_hallway_5);
+    room_prison_hallway_6.add_room_exit("west", &room_prison_2_southeast);
+    room_prison_hallway_7.add_room_exit("north", &room_prison_1_south);
+    room_prison_hallway_7.add_room_exit("south", &room_prison_hallway_4);
+
+    // Items and Chests in Prison Room 1
+    Chest chest_pr_1(item_library["room key"]);
+    room_prison_1_southeast.add_chest(&chest_pr_1);
 
     // Prison Room 1
-    room_prison_1_south.add_room_exit("south", &room_prison_hallway_4);
+    room_prison_1_south.add_room_exit("south", &room_prison_hallway_7);
     room_prison_1_south.add_room_exit("north", &room_prison_1_middle);
     room_prison_1_south.add_room_exit("east", &room_prison_1_southeast);
     room_prison_1_south.add_room_exit("west", &room_prison_1_southwest);
@@ -309,6 +373,51 @@ void start_new_game() {
     room_prison_1_southwest.add_room_exit("north", &room_prison_1_west);
     room_prison_1_southwest.add_room_exit("east", &room_prison_1_south);
 
+    // Items and Chests in Prison Room
+    room_prison_2_northeast.add_item(item_library["blood-stained key"]);
+    room_prison_2_northeast.revealed_item_name = "blood-stained key";
+    Chest chest_pr_2(item_library["Aegis' Thorn"], "blood-stained key");
+    room_prison_2_northwest.add_chest(&chest_pr_2);
+
+    // Prison Room 2, Torture Chamber
+    room_prison_hallway_6.add_door("west", Door("room key"));
+
+    room_prison_2_southeast.add_room_exit("east", &room_prison_hallway_6);
+    room_prison_2_southeast.add_room_exit("west", &room_prison_2_south);
+    room_prison_2_southeast.add_room_exit("north", &room_prison_2_east);
+    room_prison_2_southwest.add_room_exit("east", &room_prison_2_south);
+    room_prison_2_southwest.add_room_exit("north", &room_prison_2_west);
+    room_prison_2_south.add_room_exit("east", &room_prison_2_southeast);
+    room_prison_2_south.add_room_exit("north", &room_prison_2_middle);
+    room_prison_2_south.add_room_exit("west", &room_prison_2_southwest);
+    room_prison_2_middle.add_room_exit("south", &room_prison_2_south);
+    room_prison_2_middle.add_room_exit("east", &room_prison_2_east);
+    room_prison_2_middle.add_room_exit("west", &room_prison_2_west);
+    room_prison_2_middle.add_room_exit("north", &room_prison_2_north);
+    room_prison_2_north.add_room_exit("south", &room_prison_2_middle);
+    room_prison_2_north.add_room_exit("west", &room_prison_2_northwest);
+    room_prison_2_north.add_room_exit("east", &room_prison_2_northeast);
+    room_prison_2_northwest.add_room_exit("east", &room_prison_2_north);
+    room_prison_2_northwest.add_room_exit("south", &room_prison_2_west);
+    room_prison_2_northeast.add_room_exit("west", &room_prison_2_north);
+    room_prison_2_northeast.add_room_exit("south", &room_prison_2_east);
+    room_prison_2_west.add_room_exit("east", &room_prison_2_middle);
+    room_prison_2_west.add_room_exit("north", &room_prison_2_northwest);
+    room_prison_2_west.add_room_exit("south", &room_prison_2_southwest);
+    room_prison_2_east.add_room_exit("west", &room_prison_2_middle);
+    room_prison_2_east.add_room_exit("north", &room_prison_2_northeast);
+    room_prison_2_east.add_room_exit("south", &room_prison_2_southeast);
+
+    // Doors and Items in Room Storage 1
+    room_prison_2_southwest.add_door("west", Door("blood-stained key"));
+    room_storage_1.add_item(item_library["blood bottle"]);
+    room_storage_1.revealed_item_name = "blood bottle";
+
+    // Room Storage 1
+    room_prison_2_southwest.add_room_exit("west", &room_storage_1);
+    room_storage_1.add_room_exit("east", &room_prison_2_southwest);
+
+    // Player's current Room
     Room *room_current = &room_start;
     Player player;
 
@@ -349,7 +458,23 @@ void start_new_game() {
 
         } else if (player_action.find("open") != std::string::npos ||
                    player_action.find("use key") != std::string::npos) {
-            try_open_door(room_current, player);
+            if (room_current->chest && !room_current->chest->is_opened()) {
+                if (room_current->chest->is_locked()) {
+                    if (room_current->chest->can_unlock(player.player_inventory)) {
+                        std::cout << "You unlock the chest using the "
+                                  << room_current->chest->get_required_key() << ".\n\n";
+                        room_current->chest->unlock();
+                    } else {
+                        std::cout << "The chest is locked. You need a key.\n\n";
+                        continue;
+                    }
+                }
+                Item found_item = room_current->chest->open();
+                std::cout << "You open the chest and found... " << found_item.item_name << "!\n\n";
+                player.add_to_inventory(found_item);
+            } else {
+                try_open_door(room_current, player);
+            }
 
         } else if (!extract_direction(player_action).empty()) {
             std::string dir = extract_direction(player_action);
