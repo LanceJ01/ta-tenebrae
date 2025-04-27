@@ -432,7 +432,8 @@ void start_new_game() {
         std::cout << "\n";
 
         if (player_action.find("search") != std::string::npos ||
-            player_action.find("find") != std::string::npos) {
+            player_action.find("find") != std::string::npos ||
+            player_action.find("look") != std::string::npos) {
             room_current->print_search_description();
             if (!room_current->revealed_item_name.empty()) {
                 std::cout << "You found a " << room_current->revealed_item_name << ".\n";
