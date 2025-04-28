@@ -38,14 +38,16 @@ const std::string SEARCH_PRISON_HALLWAY_4 =
     "floor, drawing closer in the dark.\n";
 const std::string ROOM_PRISON_HALLWAY_7 = "You stand in front of an opened door...\n";
 const std::string ROOM_PRISON_HALLWAY_5 = "You walk down the dark hallway...\n";
-const std::string SEARCH_PRISON_HALLWAY_5 =
-    "You hear the faint scurrying of rats, their claws scraping against the "
-    "floor, drawing closer in the dark.\n";
+const std::string SEARCH_PRISON_HALLWAY_5 = "You see rats run into the darkness...\n";
 const std::string ROOM_PRISON_1_MIDDLE = "You stand in the middle of the dark room...\n";
-const std::string ROOM_PRISON_1_NORTH = "A masked figure stands in front of a door...\n";
+const std::string SEARCH_ROOM_PRISON_1_MIDDLE =
+    "You look down and see a symbol, written in blood...\n";
+const std::string ROOM_PRISON_1_NORTH = "You stand in the northern wall of the room...\n";
 const std::string ROOM_PRISON_1_SOUTH = "You stand at the southern edge of the dark room...\n";
-const std::string ROOM_PRISON_1_EAST = "You feel around the wall...\n";
-const std::string ROOM_PRISON_1_WEST = "You feel around the wall...\n";
+const std::string ROOM_PRISON_1_EAST =
+    "You feel around the wall...\nYour hands smear on what looks like "
+    "blood...\n";
+const std::string ROOM_PRISON_1_WEST = "You walk forward, hoping to find an exit...\n";
 const std::string ROOM_PRISON_1_NORTHEAST = "You walk into the corner of the room...\n";
 const std::string ROOM_PRISON_1_NORTHWEST = "You walk into the corner of the room...\n";
 const std::string ROOM_PRISON_1_SOUTHEAST = "You see a chest on ground...\n";
@@ -146,7 +148,7 @@ const std::string ITEM_ROOM_KEY = "A small iron key.\n";
 const std::string ITEM_BLOODSTAINED_KEY =
     "The key is small, its surface smeared with fresh blood, the red stains "
     "still wet and dark against the metal.\n";
-const std::string ITEM_AEGIS_THORN =
+const std::string ITEM_OBSIDIAN_DAGGER =
     "A thin, obsidian dagger, its blade slick with dried blood. The hilt is "
     "worn, and a sense of dread clings to it, as if it thirsts for more.\n";
 const std::string ITEM_BLOOD_BOTTLE =
