@@ -452,7 +452,7 @@ void start_new_game() {
                     std::cout << "The item is no longer here.\n";
                 }
             } else {
-                std::cout << "You see nothing to take.\n\n";
+                std::cout << "You see nothing to take.\nTry searching first...\n\n";
             }
         } else if (player_action.find("inventory") != std::string::npos) {
             player.print_inventory();
