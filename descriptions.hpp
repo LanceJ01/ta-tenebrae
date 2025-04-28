@@ -47,12 +47,16 @@ const std::string ROOM_PRISON_1_SOUTH = "You stand at the southern edge of the d
 const std::string ROOM_PRISON_1_EAST =
     "You feel around the wall...\nYour hands smear on what looks like "
     "blood...\n";
-const std::string ROOM_PRISON_1_WEST = "You walk forward, hoping to find an exit...\n";
+const std::string ROOM_PRISON_1_WEST =
+    "You walk forward, hoping to find an exit...\nYour hands brush against a "
+    "door knob...\n";
+const std::string SEARCH_ROOM_PRISON_1_WEST = "You see a door in front of you...\n";
 const std::string ROOM_PRISON_1_NORTHEAST = "You walk into the corner of the room...\n";
 const std::string ROOM_PRISON_1_NORTHWEST = "You walk into the corner of the room...\n";
 const std::string ROOM_PRISON_1_SOUTHEAST = "You see a chest on ground...\n";
 const std::string SEARCH_ROOM_PRISON_1_SOUTHEAST = "The chest looks old and greasy...\n";
 const std::string ROOM_PRISON_1_SOUTHWEST = "You walk into the corner of the room...\n";
+const std::string ROOM_PRISON_HALLWAY_8 = "You enter a dark and narrow hallway...\n";
 const std::string ROOM_PRISON_HALLWAY_6 =
     "Before you looms a battered door, the wood blackened with age and "
     "something darker. A twisted, rust-stained plaque above it displays a "
@@ -155,4 +159,6 @@ const std::string ITEM_BLOOD_BOTTLE =
     "The bottle is filled with dark blood, its glass marked with strange "
     "symbols. The air smells heavy with iron, and it almost feels like the "
     "blood is calling out, waiting to be consumed.\n";
+const std::string ITEM_GOLD_KEY =
+    "The key shines bright against the darkness of this horrid place.\n";
 } // namespace descriptions

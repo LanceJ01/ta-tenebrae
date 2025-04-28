@@ -33,26 +33,27 @@ public:
     std::string dialogue;
     std::string death_item;
     std::string post_receive_item_dialogue;
+    Item *drop_item = nullptr;
     std::vector<Item> inventory;
 
     NPC(const std::string &npc_name, const std::string &npc_description, int npc_health = 5,
         bool is_hostile = false, const std::string &npc_required_item = "",
         const std::string &npc_dialogue = "", const std::string &npc_death_item = "",
-        const std::string &npc_post_receive_item_dialogue = "")
+        const std::string &npc_post_receive_item_dialogue = "", Item *npc_drop_item = nullptr)
         : name(npc_name), description(npc_description), health(npc_health), hostile(is_hostile),
           required_item(npc_required_item), dialogue(npc_dialogue), death_item(npc_death_item),
-          post_receive_item_dialogue(npc_post_receive_item_dialogue) {}
+          post_receive_item_dialogue(npc_post_receive_item_dialogue), drop_item(npc_drop_item) {}
 
-    void talk() const { std::cout << name << ": \"" << dialogue << "\"\n\n"; }
+    void talk() const { std::cout << name << ": " << dialogue << "\n\n"; }
 
     void receive_item(const Item &item) { inventory.push_back(item); }
 
     void take_damage(int damage) {
         health -= damage;
         if (health <= 0) {
-            std::cout << name << " was murdered...\n";
+            std::cout << name << " was murdered...\n\n";
         } else {
-            std::cout << "You attacked " << name << ".\n";
+            std::cout << "You attacked " << name << ".\n\n";
         }
     }
 
@@ -126,6 +127,7 @@ public:
 class Player {
 public:
     std::vector<Item> player_inventory;
+    bool is_alive = true;
 
     void add_to_inventory(const Item &item) {
         player_inventory.push_back(item);
@@ -151,6 +153,8 @@ public:
         }
         return false;
     }
+
+    void player_dies() { is_alive = false; }
 };
 
 class Room {
@@ -199,10 +203,19 @@ public:
 
     void print_search_description() {
         has_been_searched = true;
-        if (!search_description.empty()) {
+        if (!revealed_item_name.empty()) {
+            if (!search_description.empty()) {
+                std::cout << search_description << "\n";
+            }
+            std::cout << "You found a " << revealed_item_name << ".\n";
+            std::cout << "\nType 'take' to pick it up.\n\n";
+        } else if (!search_description.empty()) {
             std::cout << search_description << "\n";
         } else {
             std::cout << "You find nothing of interest.\n\n";
+        }
+
+        if (!revealed_item_name.empty()) {
         }
     }
 
@@ -345,27 +358,48 @@ void give_item_to_npc(Room *room_current, Player &player, const std::string &ite
             npc->health = 0;
             std::cout << npc->name << " falls to the ground and dies...\n\n";
             room_current->remove_npc(npc->name);
+
+            if (npc->drop_item != nullptr) {
+                room_current->add_item(*npc->drop_item);
+                room_current->revealed_item_name = npc->drop_item->item_name;
+                room_current->has_been_searched = false;
+            }
         }
     } else {
-        std::cout << "You don't have that item...\n";
+        std::cout << "You don't have that item...\n\n";
     }
 }
 
 void attack_npc(Room *room_current, Player &player, const std::string &npc_name) {
     NPC *npc = room_current->find_npc(npc_name);
     if (npc) {
-        int damage = 1; // Default damage
+        int max_damage = 1; // Default damage
 
-        if (player.has_item("rusted knife")) {
-            damage = 2;
-        } else if (player.has_item("obsidian dagger")) {
-            damage = 5;
+        for (const auto &item : player.player_inventory) {
+            if (item.item_name == "rusted knife") {
+                max_damage = std::max(max_damage, 2);
+            } else if (item.item_name == "obsidian dagger") {
+                max_damage = std::max(max_damage, 5);
+            }
         }
 
-        npc->take_damage(damage);
+        npc->take_damage(max_damage);
+        int required_damage = 5;
 
-        if (npc->health <= 0) {
-            room_current->remove_npc(npc_name);
+        if (max_damage >= required_damage) {
+            if (npc->health <= 0) {
+                if (npc->drop_item != nullptr) {
+                    room_current->add_item(*npc->drop_item);
+                    room_current->revealed_item_name = npc->drop_item->item_name;
+                    room_current->has_been_searched = false;
+                }
+                room_current->remove_npc(npc_name);
+            }
+        } else {
+            std::cout << "The " << npc->name
+                      << " stands, and without hesitation...\nslices your throat.\n";
+            player.player_dies();
+            return;
         }
     } else {
         std::cout << "There is no one to attack..\n\n";
@@ -379,7 +413,8 @@ std::map<std::string, Item> item_library = {
     {"room key", Item("room key", descriptions::ITEM_ROOM_KEY)},
     {"blood-stained key", Item("blood-stained key", descriptions::ITEM_BLOODSTAINED_KEY)},
     {"obsidian dagger", Item("obsidian dagger", descriptions::ITEM_OBSIDIAN_DAGGER)},
-    {"blood bottle", Item("blood bottle", descriptions::ITEM_BLOOD_BOTTLE)}};
+    {"blood bottle", Item("blood bottle", descriptions::ITEM_BLOOD_BOTTLE)},
+    {"gold key", Item("gold key", descriptions::ITEM_GOLD_KEY)}};
 
 // Functions
 void print_centered(const std::string &text, size_t width = 80) {
@@ -430,12 +465,14 @@ void start_new_game() {
     Room room_prison_1_north(descriptions::ROOM_PRISON_1_NORTH);
     Room room_prison_1_south(descriptions::ROOM_PRISON_1_SOUTH);
     Room room_prison_1_east(descriptions::ROOM_PRISON_1_EAST);
-    Room room_prison_1_west(descriptions::ROOM_PRISON_1_WEST);
+    Room room_prison_1_west(descriptions::ROOM_PRISON_1_WEST,
+                            descriptions::SEARCH_ROOM_PRISON_1_WEST);
     Room room_prison_1_northeast(descriptions::ROOM_PRISON_1_NORTHEAST);
     Room room_prison_1_northwest(descriptions::ROOM_PRISON_1_NORTHWEST);
     Room room_prison_1_southeast(descriptions::ROOM_PRISON_1_SOUTHEAST,
                                  descriptions::SEARCH_ROOM_PRISON_1_SOUTHEAST);
     Room room_prison_1_southwest(descriptions::ROOM_PRISON_1_SOUTHWEST);
+    Room room_prison_hallway_8(descriptions::ROOM_PRISON_HALLWAY_8);
     Room room_prison_hallway_6(descriptions::ROOM_PRISON_HALLWAY_6);
     Room room_prison_2_southeast(descriptions::ROOM_PRISON_2_SOUTHEAST);
     Room room_prison_2_south(descriptions::ROOM_PRISON_2_SOUTH);
@@ -502,6 +539,7 @@ void start_new_game() {
     room_prison_hallway_6.add_room_exit("west", &room_prison_2_southeast);
     room_prison_hallway_7.add_room_exit("north", &room_prison_1_south);
     room_prison_hallway_7.add_room_exit("south", &room_prison_hallway_4);
+    room_prison_hallway_8.add_room_exit("east", &room_prison_1_west);
 
     // Items and Chests in Prison Room 1
     Chest chest_pr_1(item_library["room key"]);
@@ -512,13 +550,16 @@ void start_new_game() {
                         "A masked figure stands motionless. It watches you, and you can’t shake "
                         "the sense it wants something...from you.\n",
                         5, false, "blood bottle", "...", "blood bottle",
-                        "The masked figure moves to the rune etched in the floor’s center. \nIt "
-                        "lifts the blood bottle overhead and lets out a bone-chilling "
-                        "screech that echoes through the chamber.\nThe masked figure drinks the "
-                        "whole bottle...\n");
+                        "The masked figure lifts the blood bottle overhead and lets out a "
+                        "bone-chilling screech that echoes through the chamber.\nThe masked "
+                        "figure drinks the "
+                        "whole bottle...\n",
+                        &item_library["gold key"]);
     room_prison_1_north.add_npc(masked_figure_1);
 
     // Prison Room 1
+    room_prison_1_west.add_door("west", Door("gold key"));
+
     room_prison_1_south.add_room_exit("south", &room_prison_hallway_7);
     room_prison_1_south.add_room_exit("north", &room_prison_1_middle);
     room_prison_1_south.add_room_exit("east", &room_prison_1_southeast);
@@ -544,6 +585,7 @@ void start_new_game() {
     room_prison_1_southeast.add_room_exit("west", &room_prison_1_south);
     room_prison_1_southwest.add_room_exit("north", &room_prison_1_west);
     room_prison_1_southwest.add_room_exit("east", &room_prison_1_south);
+    room_prison_1_west.add_room_exit("west", &room_prison_hallway_8);
 
     // Items and Chests in Prison Room
     room_prison_2_northeast.add_item(item_library["blood-stained key"]);
@@ -598,6 +640,11 @@ void start_new_game() {
     std::string player_action;
 
     while (true) {
+        if (!player.is_alive) {
+            std::cout << "\nYou died...\n";
+            break;
+        }
+
         std::cout << "\nACTION: ";
         std::getline(std::cin >> std::ws, player_action);
         player_action = to_lowercase(player_action);
@@ -607,10 +654,6 @@ void start_new_game() {
             player_action.find("find") != std::string::npos ||
             player_action.find("look") != std::string::npos) {
             room_current->print_search_description();
-            if (!room_current->revealed_item_name.empty()) {
-                std::cout << "You found a " << room_current->revealed_item_name << ".\n";
-                std::cout << "\nType 'take' to pick it up.\n\n";
-            }
 
         } else if (player_action.find("take") != std::string::npos) {
             if (room_current->has_been_searched_by_player() &&
@@ -667,6 +710,25 @@ void start_new_game() {
             } else {
                 std::cout << "Give what?\n";
             }
+
+        } else if (player_action.find("kill self") != std::string::npos ||
+                   player_action.find("kill myself") != std::string::npos ||
+                   player_action.find("suicide") != std::string::npos) {
+            if (player.has_item("rusted knife")) {
+                std::cout << "You can't handle the darkness...\nYou take the rusted "
+                             "knife and plunge it deep into stomach...\n";
+                player.player_dies();
+                break;
+            } else if (player.has_item("obsidian dagger")) {
+                std::cout << "The dagger speaks to you...\nIt wants you...\nYou hear "
+                             "the voices that come before...\nYou look to the ceiling "
+                             "and plunge the dagger into your stomach...\n";
+                player.player_dies();
+                break;
+            } else {
+                std::cout << "You have nothing to kill yourself with...\n";
+            }
+
         } else if (player_action.find("attack") != std::string::npos ||
                    player_action.find("kill") != std::string::npos) {
             if (!room_current->npcs.empty()) {
@@ -676,14 +738,15 @@ void start_new_game() {
             } else {
                 std::cout << "There is no one to attack...\n";
             }
+
         } else if (player_action.find("drink blood bottle") != std::string::npos) {
             if (player.has_item("blood bottle")) {
                 std::cout << "You begin to drink the blood bottle...\nYou feel the thick "
                              "coagulated blood slide down your throat...\nAt first your body "
                              "wanted to reject it, but after you drink...\nand drink...\nand "
                              "drink...\nYou begin to feel something else...\nBliss...\n";
-                std::cout << "You died\n";
-                break;
+                player.player_dies();
+
             } else {
                 std::cout << "You don't have a blood bottle in your inventory.\n\n";
             }
