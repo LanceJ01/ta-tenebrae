@@ -487,6 +487,56 @@ void start_new_game() {
     Room room_prison_2_northeast(descriptions::ROOM_PRISON_2_NORTHEAST,
                                  descriptions::SEARCH_ROOM_PRISON_2_NORTHEAST);
     Room room_storage_1(descriptions::ROOM_STORAGE_1, descriptions::SEARCH_ROOM_STORAGE_1);
+    Room room_prison_hallway_9(descriptions::ROOM_PRISON_HALLWAY_9);
+    Room room_prison_hallway_10(descriptions::ROOM_PRISON_HALLWAY_10);
+    Room room_prison_hallway_11(descriptions::ROOM_PRISON_HALLWAY_11);
+    Room room_prison_hallway_12(descriptions::ROOM_PRISON_HALLWAY_12);
+    Room room_cathedral_g1(descriptions::ROOM_CATHEDRAL_G1);
+    Room room_cathedral_g2(descriptions::ROOM_CATHEDRAL_G2);
+    Room room_cathedral_g3(descriptions::ROOM_CATHEDRAL_G3);
+    Room room_cathedral_g4(descriptions::ROOM_CATHEDRAL_G4);
+    Room room_cathedral_g5(descriptions::ROOM_CATHEDRAL_G5);
+    Room room_cathedral_g6(descriptions::ROOM_CATHEDRAL_G6);
+    Room room_cathedral_g7(descriptions::ROOM_CATHEDRAL_G7);
+    Room room_cathedral_g8(descriptions::ROOM_CATHEDRAL_G8);
+    Room room_cathedral_g9(descriptions::ROOM_CATHEDRAL_G9);
+    Room room_cathedral_g10(descriptions::ROOM_CATHEDRAL_G10);
+    Room room_cathedral_g11(descriptions::ROOM_CATHEDRAL_G11);
+    Room room_cathedral_g12(descriptions::ROOM_CATHEDRAL_G12);
+    Room room_cathedral_g13(descriptions::ROOM_CATHEDRAL_G13);
+    Room room_cathedral_g14(descriptions::ROOM_CATHEDRAL_G14);
+    Room room_cathedral_g15(descriptions::ROOM_CATHEDRAL_G15);
+    Room room_cathedral_g16(descriptions::ROOM_CATHEDRAL_G16);
+    Room room_cathedral_g17(descriptions::ROOM_CATHEDRAL_G17);
+    Room room_cathedral_g18(descriptions::ROOM_CATHEDRAL_G18);
+    Room room_cathedral_g19(descriptions::ROOM_CATHEDRAL_G19);
+    Room room_cathedral_g20(descriptions::ROOM_CATHEDRAL_G20);
+    Room room_cathedral_g21(descriptions::ROOM_CATHEDRAL_G21);
+    Room room_cathedral_g22(descriptions::ROOM_CATHEDRAL_G22);
+    Room room_brother_1_north(descriptions::ROOM_BROTHER_1_NORTH);
+    Room room_brother_1_south(descriptions::ROOM_BROTHER_1_SOUTH);
+    Room room_brother_1_west(descriptions::ROOM_BROTHER_1_WEST);
+    Room room_brother_1_east(descriptions::ROOM_BROTHER_1_EAST);
+    Room room_brother_1_northeast(descriptions::ROOM_BROTHER_1_NORTHEAST);
+    Room room_brother_1_northwest(descriptions::ROOM_BROTHER_1_NORTHWEST);
+    Room room_brother_1_southeast(descriptions::ROOM_BROTHER_1_SOUTHEAST);
+    Room room_brother_1_southwest(descriptions::ROOM_BROTHER_1_SOUTHWEST);
+    Room room_brother_2_north(descriptions::ROOM_BROTHER_2_NORTH);
+    Room room_brother_2_south(descriptions::ROOM_BROTHER_2_SOUTH);
+    Room room_brother_2_west(descriptions::ROOM_BROTHER_2_WEST);
+    Room room_brother_2_east(descriptions::ROOM_BROTHER_2_EAST);
+    Room room_brother_2_northeast(descriptions::ROOM_BROTHER_2_NORTHEAST);
+    Room room_brother_2_northwest(descriptions::ROOM_BROTHER_2_NORTHWEST);
+    Room room_brother_2_southeast(descriptions::ROOM_BROTHER_2_SOUTHEAST);
+    Room room_brother_2_southwest(descriptions::ROOM_BROTHER_2_SOUTHWEST);
+    Room room_brother_3_north(descriptions::ROOM_BROTHER_3_NORTH);
+    Room room_brother_3_south(descriptions::ROOM_BROTHER_3_SOUTH);
+    Room room_brother_3_west(descriptions::ROOM_BROTHER_3_WEST);
+    Room room_brother_3_east(descriptions::ROOM_BROTHER_3_EAST);
+    Room room_brother_3_northeast(descriptions::ROOM_BROTHER_3_NORTHEAST);
+    Room room_brother_3_northwest(descriptions::ROOM_BROTHER_3_NORTHWEST);
+    Room room_brother_3_southeast(descriptions::ROOM_BROTHER_3_SOUTHEAST);
+    Room room_brother_3_southwest(descriptions::ROOM_BROTHER_3_SOUTHWEST);
 
     // Starting Room Area Items, Doors, Chests
     room_start_north.add_door("north", Door("cell key"));
@@ -540,6 +590,15 @@ void start_new_game() {
     room_prison_hallway_7.add_room_exit("north", &room_prison_1_south);
     room_prison_hallway_7.add_room_exit("south", &room_prison_hallway_4);
     room_prison_hallway_8.add_room_exit("east", &room_prison_1_west);
+    room_prison_hallway_8.add_room_exit("west", &room_prison_hallway_9);
+    room_prison_hallway_9.add_room_exit("east", &room_prison_hallway_8);
+    room_prison_hallway_9.add_room_exit("west", &room_prison_hallway_10);
+    room_prison_hallway_10.add_room_exit("east", &room_prison_hallway_9);
+    room_prison_hallway_10.add_room_exit("north", &room_prison_hallway_11);
+    room_prison_hallway_11.add_room_exit("south", &room_prison_hallway_10);
+    room_prison_hallway_11.add_room_exit("north", &room_prison_hallway_12);
+    room_prison_hallway_12.add_room_exit("south", &room_prison_hallway_11);
+    room_prison_hallway_12.add_room_exit("north", &room_cathedral_g21);
 
     // Items and Chests in Prison Room 1
     Chest chest_pr_1(item_library["room key"]);
@@ -630,6 +689,76 @@ void start_new_game() {
     // Room Storage 1
     room_prison_2_southwest.add_room_exit("west", &room_storage_1);
     room_storage_1.add_room_exit("east", &room_prison_2_southwest);
+
+    // Doors and Items in Cathedral Room
+    room_prison_hallway_12.add_door("north", Door("gold key"));
+    room_cathedral_g6.add_door("west", Door("gold key"));
+    room_cathedral_g14.add_door("east", Door("gold key"));
+    room_cathedral_g1.add_door("north", Door("gold key"));
+
+    // Cathedral Room
+    room_cathedral_g21.add_room_exit("south", &room_prison_hallway_12);
+    room_cathedral_g21.add_room_exit("west", &room_cathedral_g20);
+    room_cathedral_g21.add_room_exit("east", &room_cathedral_g22);
+    room_cathedral_g21.add_room_exit("north", &room_cathedral_g17);
+    room_cathedral_g20.add_room_exit("east", &room_cathedral_g21);
+    room_cathedral_g20.add_room_exit("north", &room_cathedral_g16);
+    room_cathedral_g22.add_room_exit("west", &room_cathedral_g21);
+    room_cathedral_g22.add_room_exit("north", &room_cathedral_g18);
+    room_cathedral_g17.add_room_exit("south", &room_cathedral_g21);
+    room_cathedral_g17.add_room_exit("west", &room_cathedral_g16);
+    room_cathedral_g17.add_room_exit("east", &room_cathedral_g18);
+    room_cathedral_g17.add_room_exit("north", &room_cathedral_g10);
+    room_cathedral_g16.add_room_exit("east", &room_cathedral_g17);
+    room_cathedral_g16.add_room_exit("west", &room_cathedral_g15);
+    room_cathedral_g16.add_room_exit("south", &room_cathedral_g20);
+    room_cathedral_g16.add_room_exit("north", &room_cathedral_g9);
+    room_cathedral_g15.add_room_exit("east", &room_cathedral_g16);
+    room_cathedral_g15.add_room_exit("north", &room_cathedral_g8);
+    room_cathedral_g18.add_room_exit("west", &room_cathedral_g17);
+    room_cathedral_g18.add_room_exit("east", &room_cathedral_g19);
+    room_cathedral_g18.add_room_exit("north", &room_cathedral_g11);
+    room_cathedral_g18.add_room_exit("south", &room_cathedral_g22);
+    room_cathedral_g19.add_room_exit("west", &room_cathedral_g18);
+    room_cathedral_g19.add_room_exit("north", &room_cathedral_g12);
+    room_cathedral_g10.add_room_exit("south", &room_cathedral_g17);
+    room_cathedral_g10.add_room_exit("west", &room_cathedral_g9);
+    room_cathedral_g10.add_room_exit("east", &room_cathedral_g11);
+    room_cathedral_g10.add_room_exit("north", &room_cathedral_g4);
+    room_cathedral_g9.add_room_exit("south", &room_cathedral_g16);
+    room_cathedral_g9.add_room_exit("east", &room_cathedral_g10);
+    room_cathedral_g9.add_room_exit("west", &room_cathedral_g8);
+    room_cathedral_g9.add_room_exit("north", &room_cathedral_g3);
+    room_cathedral_g8.add_room_exit("east", &room_cathedral_g9);
+    room_cathedral_g8.add_room_exit("west", &room_cathedral_g7);
+    room_cathedral_g8.add_room_exit("south", &room_cathedral_g15);
+    room_cathedral_g7.add_room_exit("east", &room_cathedral_g8);
+    room_cathedral_g7.add_room_exit("west", &room_cathedral_g6);
+    room_cathedral_g6.add_room_exit("east", &room_cathedral_g7);
+    room_cathedral_g11.add_room_exit("west", &room_cathedral_g10);
+    room_cathedral_g11.add_room_exit("east", &room_cathedral_g12);
+    room_cathedral_g11.add_room_exit("south", &room_cathedral_g18);
+    room_cathedral_g11.add_room_exit("north", &room_cathedral_g5);
+    room_cathedral_g12.add_room_exit("west", &room_cathedral_g11);
+    room_cathedral_g12.add_room_exit("east", &room_cathedral_g13);
+    room_cathedral_g12.add_room_exit("south", &room_cathedral_g19);
+    room_cathedral_g13.add_room_exit("west", &room_cathedral_g12);
+    room_cathedral_g13.add_room_exit("east", &room_cathedral_g14);
+    room_cathedral_g14.add_room_exit("west", &room_cathedral_g13);
+    room_cathedral_g4.add_room_exit("south", &room_cathedral_g10);
+    room_cathedral_g4.add_room_exit("east", &room_cathedral_g5);
+    room_cathedral_g4.add_room_exit("west", &room_cathedral_g3);
+    room_cathedral_g4.add_room_exit("north", &room_cathedral_g2);
+    room_cathedral_g3.add_room_exit("east", &room_cathedral_g4);
+    room_cathedral_g3.add_room_exit("south", &room_cathedral_g9);
+    room_cathedral_g5.add_room_exit("west", &room_cathedral_g4);
+    room_cathedral_g5.add_room_exit("south", &room_cathedral_g11);
+    room_cathedral_g2.add_room_exit("south", &room_cathedral_g4);
+    room_cathedral_g2.add_room_exit("north", &room_cathedral_g1);
+    room_cathedral_g1.add_room_exit("south", &room_cathedral_g2);
+    room_cathedral_g6.add_room_exit("west", &room_brother_2_east);
+    room_cathedral_g1.add_room_exit("north", &room_brother_1_south);
+    room_cathedral_g14.add_room_exit("east", &room_brother_3_west);
 
     // Player's current Room
     Room *room_current = &room_start;
