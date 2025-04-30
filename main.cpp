@@ -1,5 +1,6 @@
 #include "descriptions.hpp"
 #include <algorithm>
+#include <cstdlib>
 #include <iostream>
 #include <map>
 #include <vector>
@@ -432,6 +433,19 @@ void attack_npc(Room *room_current, Player &player, const std::string &npc_name)
     }
 }
 
+bool check_victory(const Player &player) {
+    for (const auto &item : player.player_inventory) {
+        if (to_lowercase(item.item_name) == "orbis dei") {
+            std::cout << "\nYou feel an impossible weight settle in your "
+                         "hands...\nYou hear the heavens call upon you...\nThe ORBIS "
+                         "DEI hums with unknowable power...\nEverything "
+                         "fades...\nThanks for playing!!!\n\n";
+            return true;
+        }
+    }
+    return false;
+}
+
 // Global items
 std::map<std::string, Item> item_library = {
     {"rusted knife", Item("rusted knife", descriptions::ITEM_RUSTED_KNIFE)},
@@ -447,6 +461,7 @@ std::map<std::string, Item> item_library = {
     {"ORBIS DEI", Item("ORBIS DEI", descriptions::ITEM_ORBIS_DEI)},
     {"notes", Item("notes", descriptions::ITEM_NOTES)},
     {"torn note", Item("torn note", descriptions::ITEM_TORN_NOTE)},
+    {"blood necklace", Item("blood necklace", descriptions::ITEM_BLOOD_NECKLACE)},
     {"mother's heart", Item("mother's heart", descriptions::ITEM_MOTHERS_HEART)},
     {"wooden sword", Item("wooden sword", descriptions::ITEM_WOODEN_SWORD)}};
 
@@ -729,9 +744,9 @@ void start_new_game() {
     room_cathedral_g1.add_door("north", Door("gold key"));
     Chest chest_c1(item_library["ORBIS DEI"], {"pater orbis", "mater orbis", "filius orbis"});
     room_cathedral_g10.add_chest(&chest_c1);
-    Chest chest_c2(item_library["mother's heart"], {""});
+    Chest chest_c2(item_library["mother's heart"]);
     room_cathedral_g15.add_chest(&chest_c2);
-    Chest chest_c3(item_library["wooden sword"], {""});
+    Chest chest_c3(item_library["wooden sword"]);
     room_cathedral_g19.add_chest(&chest_c3);
 
     // NPCS
@@ -759,7 +774,8 @@ void start_new_game() {
     NPC masked_priest("Masked Priest",
                       "The priest stands in silence, his while robes soaked through with "
                       "blood. A gold mask hides his face. You see nothing in his eyes as they "
-                      "stare at you...\n",
+                      "stare at you...\nYou also notice a necklace, with a blood vial dangling "
+                      "from his neck...\n",
                       5, false, "blood bottle",
                       "Pater Orbis - the eye that judges!\nMater Orbis - the heart that "
                       "grieves!\nFilius Orbis - the hand that strikes!\nEach must be "
@@ -834,6 +850,17 @@ void start_new_game() {
     room_cathedral_g14.add_room_exit("east", &room_brother_3_west);
 
     // Room 2
+
+    // NPC
+
+    NPC filius("The boy", "The boy sits in the middle of his room, looking for something...\n", 5,
+               false, "wooden sword",
+               "Please help me, I've lost my wooden sword! If you find it, I can give "
+               "you something in return.",
+               "", "That's it! Here you can have this.", &item_library["filius orbis"],
+               &item_library["filius orbis"]);
+    room_brother_2_middle.add_npc(filius);
+
     room_brother_2_east.add_room_exit("east", &room_cathedral_g6);
     room_brother_2_east.add_room_exit("north", &room_brother_2_northeast);
     room_brother_2_east.add_room_exit("south", &room_brother_2_southeast);
@@ -851,6 +878,18 @@ void start_new_game() {
     room_brother_2_north.add_room_exit("south", &room_brother_2_middle);
 
     // Room 3
+
+    // NPC
+    NPC mater("The mother", "The mother sits in the middle of the room, painting something...\n", 5,
+              false, "mother's heart",
+              "Don't speak to me while I'm painting...\nComeback once you've got "
+              "something worthwhile...",
+              "",
+              "Oh...that's my old project.\nI've taken my heart and sacrificed "
+              "it to our savior!\nYou should try it sometime...",
+              &item_library["mater orbis"], &item_library["mater orbis"]);
+    room_brother_3_middle.add_npc(mater);
+
     room_brother_3_west.add_room_exit("west", &room_cathedral_g14);
     room_brother_3_west.add_room_exit("north", &room_brother_3_northwest);
     room_brother_3_west.add_room_exit("south", &room_brother_3_southwest);
@@ -868,6 +907,18 @@ void start_new_game() {
     room_brother_3_north.add_room_exit("south", &room_brother_3_middle);
 
     // Room 1
+
+    // NPC
+    NPC pater("The father", "The father sits upon a throne of blood...\n", 5, false,
+              "blood necklace",
+              "Someone stole my blood necklace...\nWhen I find out who did it, "
+              "I'm going to tear their head out of their fleshed body!",
+              "",
+              "You've found it...who had it???\nWas it the priest?\nNo matter, "
+              "here take this and start your ascent...",
+              &item_library["pater orbis"], &item_library["pater orbis"]);
+    room_brother_1_middle.add_npc(pater);
+
     room_brother_1_south.add_room_exit("south", &room_cathedral_g1);
     room_brother_1_south.add_room_exit("west", &room_brother_1_southwest);
     room_brother_1_south.add_room_exit("east", &room_brother_1_southeast);
@@ -895,6 +946,9 @@ void start_new_game() {
     while (true) {
         if (!player.is_alive) {
             std::cout << "\nYou died...\n";
+            break;
+        }
+        if (check_victory(player)) {
             break;
         }
 
@@ -934,13 +988,16 @@ void start_new_game() {
                                   << room_current->chest->get_required_key() << ".\n\n";
                         room_current->chest->unlock();
                     } else {
-                        std::cout << "The chest is locked. You need a key.\n\n";
+                        std::cout << "The chest is locked.\n\n";
                         continue;
                     }
                 }
                 Item found_item = room_current->chest->open();
                 std::cout << "You open the chest and found... " << found_item.item_name << "!\n\n";
                 player.add_to_inventory(found_item);
+                if (check_victory(player)) {
+                    break;
+                };
             } else {
                 try_open_door(room_current, player);
             }
@@ -971,13 +1028,11 @@ void start_new_game() {
                 std::cout << "You can't handle the darkness...\nYou take the rusted "
                              "knife and plunge it deep into stomach...\n";
                 player.player_dies();
-                break;
             } else if (player.has_item("obsidian dagger")) {
                 std::cout << "The dagger speaks to you...\nIt wants you...\nYou hear "
                              "the voices that come before...\nYou look to the ceiling "
                              "and plunge the dagger into your stomach...\n";
                 player.player_dies();
-                break;
             } else {
                 std::cout << "You have nothing to kill yourself with...\n";
             }
