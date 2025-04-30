@@ -142,56 +142,229 @@ const std::string ROOM_STORAGE_1 =
     "dark and stained\n";
 const std::string SEARCH_ROOM_STORAGE_1 = "You look through the blood-filled bottles...\n";
 
-const std::string ROOM_PRISON_HALLWAY_9 = "FILLER TEXT\n";
-const std::string ROOM_PRISON_HALLWAY_10 = "FILLER TEXT\n";
-const std::string ROOM_PRISON_HALLWAY_11 = "FILLER TEXT\n";
-const std::string ROOM_PRISON_HALLWAY_12 = "FILLER TEXT\n";
-const std::string ROOM_CATHEDRAL_G1 = "FILLER TEXT\n";
-const std::string ROOM_CATHEDRAL_G2 = "FILLER TEXT\n";
-const std::string ROOM_CATHEDRAL_G3 = "FILLER TEXT\n";
-const std::string ROOM_CATHEDRAL_G4 = "FILLER TEXT\n";
-const std::string ROOM_CATHEDRAL_G5 = "FILLER TEXT\n";
-const std::string ROOM_CATHEDRAL_G6 = "FILLER TEXT\n";
-const std::string ROOM_CATHEDRAL_G7 = "FILLER TEXT\n";
-const std::string ROOM_CATHEDRAL_G8 = "FILLER TEXT\n";
-const std::string ROOM_CATHEDRAL_G9 = "FILLER TEXT\n";
-const std::string ROOM_CATHEDRAL_G10 = "FILLER TEXT\n";
-const std::string ROOM_CATHEDRAL_G11 = "FILLER TEXT\n";
-const std::string ROOM_CATHEDRAL_G12 = "FILLER TEXT\n";
-const std::string ROOM_CATHEDRAL_G13 = "FILLER TEXT\n";
-const std::string ROOM_CATHEDRAL_G14 = "FILLER TEXT\n";
-const std::string ROOM_CATHEDRAL_G15 = "FILLER TEXT\n";
-const std::string ROOM_CATHEDRAL_G16 = "FILLER TEXT\n";
-const std::string ROOM_CATHEDRAL_G17 = "FILLER TEXT\n";
-const std::string ROOM_CATHEDRAL_G18 = "FILLER TEXT\n";
-const std::string ROOM_CATHEDRAL_G19 = "FILLER TEXT\n";
-const std::string ROOM_CATHEDRAL_G20 = "FILLER TEXT\n";
-const std::string ROOM_CATHEDRAL_G21 = "FILLER TEXT\n";
-const std::string ROOM_CATHEDRAL_G22 = "FILLER TEXT\n";
-const std::string ROOM_BROTHER_1_NORTH = "FILLER TEXT\n";
+const std::string ROOM_PRISON_HALLWAY_9 = "You walk forward through the darkness...\n";
+const std::string ROOM_PRISON_HALLWAY_10 = "You reach the hallway's corner.\n";
+const std::string ROOM_PRISON_HALLWAY_11 = "There's light nearby...\n";
+const std::string ROOM_PRISON_HALLWAY_12 =
+    "You stand in front of a large door. On it, a sign reads CATHEDRAL.\n";
+const std::string ROOM_CATHEDRAL_G1 = "You see a door with a sign that says...PATER\n";
+const std::string ROOM_CATHEDRAL_G2 = "You walk past the rows of braziers.\n";
+const std::string ROOM_CATHEDRAL_G3 = "You stand in front of a NORTH pillar.\n";
+const std::string ROOM_CATHEDRAL_G4 = "You stand behind the altar\n";
+const std::string ROOM_CATHEDRAL_G5 = "You stand in front of a NORTH pillar.\n";
+const std::string ROOM_CATHEDRAL_G6 = "You see a door with a sign that says...FILIUS\n";
+const std::string ROOM_CATHEDRAL_G7 = "You walk past the rows of braziers.\n";
+const std::string ROOM_CATHEDRAL_G8 = "You walk past the WEST pillars.\n";
+const std::string ROOM_CATHEDRAL_G9 = "You stand next to the golden altar.\n";
+const std::string ROOM_CATHEDRAL_G10 =
+    "The golden altar glimmers.\nOn top of it sits a gold chest.\n";
+const std::string SEARCH_ROOM_CATHEDRAL_G10 = "The altar has 3 holes, perfectly spaced...\n";
+const std::string ROOM_CATHEDRAL_G11 = "You stand next to the golden altar.\n";
+const std::string ROOM_CATHEDRAL_G12 = "You walk past the EAST pillars.\n";
+const std::string ROOM_CATHEDRAL_G13 = "You walk past the rows of braziers.\n";
+const std::string ROOM_CATHEDRAL_G14 = "You see a door with a sign that says...MATER\n";
+const std::string ROOM_CATHEDRAL_G15 = "You see a painting of a woman holding a blue orb...\n";
+const std::string SEARCH_ROOM_CATHEDRAL_G15 =
+    "\033[0;34m" // color blue
+    "%%%%%%%%########################################################"
+    "##"
+    "####%%%%"
+    "%%%%%%%%%%%%%%%%%%%%%%%%%%\n"
+    "%%%%%#####################################################################"
+    "%%%%%%%%%%%%%%%%%%%%%%%%%%\n"
+    "%%#######################****************#################################"
+    "##%%%%%%%%%%%%%%%%%%%%%%%%\n"
+    "%#############*************************************#######################"
+    "####%%%%%%%%%%%%%%%%%%%%%%\n"
+    "#########********************************************#####################"
+    "#######%%%%%%%%%%%%%%%%%%%\n"
+    "#######****+++++++****************************************################"
+    "##########%%%%%%%%%%%%%%%%\n"
+    "######***++======++++++**************************************#############"
+    "############%%%%%%%%%%%%%%\n"
+    "####***++=-:::::-==++++++++++++++++++++*************************##########"
+    "#############%%%%%%%%%%%%%\n"
+    "###****+=-:.....:-==+++++++++++++++++++++++++**********************#######"
+    "################%%%%%%%%%%\n"
+    "###***++=-:......:-==+++++++++++++++++++++++++++++********************####"
+    "#################%%%%%%%%%\n"
+    "##****++=--:....::-==+++++++++=======+++++++++++++++++******************##"
+    "###################%%%%%%%\n"
+    "##****+++==---:--====++++++=====-----===++++++++++++++++++***************#"
+    "####################%%%%%%\n"
+    "##*****+++=========++++++====--:......:-==+++++++*###++++++++*************"
+    "*####################%%%%%\n"
+    "#*******++++++++++++++++====-:.....:....:==++++:-#%%%%*++++++++***********"
+    "**#####################%%%\n"
+    "#********+++++++++++++++===-:..::::::::..-===+--+%%%%%%++++++++++*********"
+    "****####################%%\n"
+    "#*********+++++++++++++===-:..::......::.:-===-.:*%%%%%#++++++++++********"
+    "******####################\n"
+    "#**********++++++++++++====:..::.......:..-====:-+##%%%%*=+++++++++*******"
+    "********##################\n"
+    "##*********++++++++++++====-:.::.........:=====--==#%%%%%+==++++++++******"
+    "*********#################\n"
+    "#***********+++++++++++=====-::::::::::.:-----=+*+*%%%%%##+=+++++++++*****"
+    "***********###############\n"
+    "#***********+++++++++++=======--:::::::------=#+*#%%%%%%#%#+=+++++++++****"
+    "************##############\n"
+    "#***********++++++++++==========--==-==------+#+#%%%%%%##%%+==+++++++++***"
+    "*************#############\n"
+    "***********++++++++++==========---------==--=+#+%%%%%%%%#%%*==++++++++++**"
+    "***************###########\n"
+    "***********++++++++++=========----------=++=**##%%%%%%%%%@@#+=+++++++++++*"
+    "*****************#########\n"
+    "#*********++++++++++=========------------=##%##%%%%%%%%%@@@%+==+++++++++++"
+    "+****************#########\n"
+    "##***********++++++++++============-------+#%%%%%%%%%%%#*%@@*=++++++++****"
+    "**************############\n"
+    "###************++++++++++++=================+#*%%%%%%%%%+*%@#++++++*******"
+    "**********###############%\n"
+    "#####*************+++++++++++++===============+*%%%%%%%%*++***+++*********"
+    "*****##################%%%\n"
+    "#########************++++++++++++++++++++++++++#%%%@@@@%%*+++***********##"
+    "#####################%%%%%\n"
+    "#############**************+++++++++++***+++++*%%%%@@@@@%%***********#####"
+    "#################%%%%%%%%%\n"
+    "############***********************************%%%@@@@@@@%#********#######"
+    "################%%%%%%%%%%\n"
+    "##################################************%%%@@@@@@@@@#****####**###%%"
+    "##############%%%%%%%%%%%%\n"
+    "%%%%%###########%#################************%%@@@@@@@@@@#*********######"
+    "#####%##**##%%%%%%%%%%%%%%\n"
+    "%%%%%%######%%%%#####################********#@@@@@@@@@@@@#*******###*####"
+    "##########%%%%%%%%%%%%%%%%\n"
+    "%%%%%%%%%%%%%%#############################**#@@@@@@@@@@@@#*#############*"
+    "**###*##%%%%%##%%%%%%%%%%%\n"
+    "%%%%%%%%%%%%###############################**#@@@@@@@@@@@@##########***###"
+    "##%#%##%%%%%%%%%%%%%%%%%%%\n"
+    "%%%%%%%%%%%%%%%###############################%@@@@@@@@@@%########**######"
+    "###%##%%##%%%%%%%%%%%%%%@@\n"
+    "%%%%%%%%%%%%%%%%%##############################@@@@@@@@@@%#####***########"
+    "#*#####%%%%%%%%%%%%%%%%%%%\n"
+    "%%%%%%%%%%%%%%%%%##############################%@@@@%@@@@%#**#############"
+    "***###%%%%%%%%%%%%%%%%%%%%\n"
+    "%%%%%%%%%%%%%%%%%%##############################@@@@%@@@@%***########**+**"
+    "##*#%%%%%%%%%%%%%%%%%%%%%%\n"
+    "%%%%%%%%%%%%%%%%%%%%%%%%%#######################%@@@#%@@@%#*######*+++**#*"
+    "##%%%%%%%%%%%%%%%%%@@@%%@@\n"
+    "%%%%%%%%%%%%%%%%%%%%%%%%%%%#####################%@@@@*%@@@#####*+++****###"
+    "%%%%%%###%%%#*##%%%@@@@@@@\n"
+    "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%####################@@@@##@@@%#*+***++++##%%%"
+    "%%%#####***#*%%%%###%@%%%%\n"
+    "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%###################@@@@#%@@@##***+++*##%%%%#"
+    "###**+++*#%#%%@@@@%%@@%%%%\n"
+    "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%##################@@@@#%@@@##*++*######*++*"
+    "*++*#%#####%%%%%%%@@@%%%%%\n"
+    "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#%#####%%%%%#####%@@@*%@@%*++*####*======="
+    "*++***##*##%%#%%%%@@@@@@%%\n"
+    "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#%%%%%%%%####@@@*%@@#*####*++++++*##*"
+    "****####%%%%%%%%##%%@%%%%@\n"
+    "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%####@@@*%@#*##*++*#*#*****##"
+    "###%@%%%%%%%%%%%%%@@%%%%%%\n"
+    "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#**#@@##%***++**####**####%"
+    "%##%%#*######%%#%@@@@%%%%%\n"
+    "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%++##%#*#%####%###*%#%%##*#%"
+    "###*#########%%%%%%%*#@@%%\n"
+    "%%%%%%%%%%%%%%%%%%#*+++++===+*#*+*#%%%%%%%%#++=*#%#****###**#**#%%#*#%%%%#"
+    "#%%%%########%%*%%+++**%%%\n"
+    "%%%%%%%%%%%%%*+++++*****+##%#***#%#+=====---=*%#*#%%%*+**##%%%%%%#%%#%%%@@"
+    "@@@@@@@%#%%%%@%@*+**+%%%%%\n"
+    "%%%%%%%%%%%%#****#%%%%%%%#**##%%%#*++******==*%##%%*+*##%%%#%%###%#%%%@@@@"
+    "@@@%@%%%%%%%@@#*+++#%*%@%%\n"
+    "%%%%%%%%%%%%%%#%%%%%%%####%%%%######*++++==*%%%#######*#%####***###%@@@@%%"
+    "%@%@@@@@%%%@@%*+*#%@@%@@@%\n"
+    "%%%%%%%%%%%%%%%@%@%%%%%%%%%%%%%#*##+++*%%%****##*+++++=+###****%%#*%%%@@%%"
+    "%@@@@@@@@@@@@@@@@@@@@@@@@%\n"
+    "%%%%%%%%%%%%%%@@@%%%%%%%%%%%###%%%%#++****#####*++==+*%%%%#***%#**%%%%%@%%"
+    "@@@@@@@@%@@@@@@@@@@@@@@@@@\n"
+    "\033[0m";
+const std::string ROOM_CATHEDRAL_G16 = "You walk through the pews\n";
+const std::string ROOM_CATHEDRAL_G17 = "You walk down the isle of the Cathedral.\n";
+const std::string ROOM_CATHEDRAL_G18 = "You walk through the pews\n";
+const std::string ROOM_CATHEDRAL_G19 = "You see a painting of a boy holding an orb...\n";
+const std::string SEARCH_ROOM_CATHEDRAL_G19 =
+    "\033[0;35m"
+    "##########%%%%%%%%%%%%%%%%%%%%%%%%%%###****++++***++**###*****######%#####"
+    "#####*****#*###**+++++***+\n"
+    "##########%%%%%%%%%%%%%%%%%%%%%%%%%#####****++++#%%%%%%%%%%%#****###%%####"
+    "##%##%###########*********\n"
+    "###%%%%%%%%%%%%##%%%######%%%%%%%###*+++++++++*%%%%%%%%%%%%%%%******######"
+    "##########%######***++**##\n"
+    "#####%%%%%%%%##%%%%%%##%%%%%%%%###**+++++++*+*#%%%%%%@%%%%%%%%%*******####"
+    "#############*##*++*#****#\n"
+    "#####%%%%%%%%%%%%%%%%%%%%%%%%%%####*******+++****#%%%@@@%%%%%%%*******####"
+    "#####****+++=++*****#*+**#\n"
+    "*#****##%%%%%%%%##%%-:*%%%%%%%%%%%%%%%%%##***#*+**##%###%#####%*+++******#"
+    "##**####*++******+*##**#**\n"
+    "#******#%%%%%%%*+-=-=::*#%%%%%%%%%########***%%#*=+**--**##*##%***********"
+    "****##*##***##**++**++++++\n"
+    "#########%%%%%**%*::-::-=*#%%%%%%########***#%%*-==*:::-**#*#%%***++++****"
+    "******#######*********++++\n"
+    "##########%%%#+%%%%#*==----+#%%%%######******+#----------=+++%#*++++++****"
+    "*******#####****#######***\n"
+    "######%%%%%%#*%%%%%%%%#*=------=-+#####*-::=*=+--+**+==*###*+**+***+++++++"
+    "**********##****####**##**\n"
+    "######%%%%%#=%%%%%%#%%%%%#+=--=-=:-***+-:-+++-:-::---:---=--==+***********"
+    "********++*######**+******\n"
+    "#####%%%%%%+#%%#%%%%%%%%%%%=+=--=+==+-::-*+=:.:--:::-::--:--=:------=++*+*"
+    "***********#**####********\n"
+    "##%%%%%%%%%#%%%%%%%%%%%%%*:-----==-=--:=.......-------=---=+-:.=++==---::-"
+    "+**+***********####*******\n"
+    "####%%%%%%%%%%%%#%%##%%%-::=---=++-====--.......:==++***+*+-::::####*+=**#"
+    "******+****###############\n"
+    "%%%%%%%%%%%%%%%%%%##%%=::-=+**-::::-+=-:::.:.::..:=*++=+#+::::-=%%%%#++#*+"
+    "++********##*############*\n"
+    "%%%%%%%%###*#%%%%%%%#-::-+*#=::::-=-:-::::...::::.:::=+#+::::=-++*****#+**"
+    "*********++********####***\n"
+    "%%#%%#%%%%%##*#%%%%%*--=+*##+:::-=:::::::::::...:::::-------=+********++**"
+    "************++******###*+*\n"
+    "%%#%%%%%%%%##%##%%%%+==+*###*-:-=:::::::::--:::....::::::---++************"
+    "************++***********+\n"
+    "%%###%%%%%%%%%%%##%%%**###****---:::::::::::::::::....:-::-+*+++++********"
+    "*************+**+*****####\n"
+    "%%%%%%##%%%%%%%%%##%%%%%%%%%%%%%%+..:::::::.:::::::::..:::-**++++********+"
+    "******************+++**###\n"
+    "%###%%%%%%%%%%%%%%%%%%%%%%%%%%%%%=.......::::....::::::...:-+*+++++*******"
+    "*****************+*****###\n"
+    "%%#%%%%%%%%%%%%%%%%%#%%%%%%%%%%%*............:::::::::::::...:=++*****+***"
+    "**#**************#*#######\n"
+    "%%%%%%#%%%%%%%%%%%%%%%%%%%%%%%%#-.............:::::::--::=:::.:::++*******"
+    "****#######**##**#***##%%#\n"
+    "%%%%%%%%%%@@@@@%%%%%%%%%%%####**=................::::..:*#*+-:::::-=******"
+    "*****##******###******####\n"
+    "%%%#%%%%%%%%@%%%%%%%%%%%%%%#####+................:::::-=####**=---:--=****"
+    "*****#*****************###\n"
+    "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%##*....................:--=*********=---==**#"
+    "#********##**###******####\n"
+    "%%%%%%%%%%%%%%%%%%%@%%%%%%%#%%+..................:----:+#**###*********##*"
+    "*##****##************#####\n"
+    "\033[0m";
+const std::string ROOM_CATHEDRAL_G20 =
+    "You stand next to large gold brazier, it's flames flicker...\n";
+const std::string ROOM_CATHEDRAL_G21 = "You stand at the entrance of the Cathedral.\n";
+const std::string SEARCH_ROOM_CATHEDRAL_G21 = "You see a giant altar in the center...\n";
+const std::string ROOM_CATHEDRAL_G22 =
+    "You stand next to large gold brazier, it's flames flicker...\n";
+const std::string ROOM_BROTHER_1_MIDDLE = "FILLER TEXT\n";
 const std::string ROOM_BROTHER_1_SOUTH = "FILLER TEXT\n";
 const std::string ROOM_BROTHER_1_EAST = "FILLER TEXT\n";
 const std::string ROOM_BROTHER_1_WEST = "FILLER TEXT\n";
-const std::string ROOM_BROTHER_1_NORTHEAST = "FILLER TEXT\n";
-const std::string ROOM_BROTHER_1_NORTHWEST = "FILLER TEXT\n";
 const std::string ROOM_BROTHER_1_SOUTHEAST = "FILLER TEXT\n";
 const std::string ROOM_BROTHER_1_SOUTHWEST = "FILLER TEXT\n";
+const std::string ROOM_BROTHER_2_MIDDLE = "FILLER TEXT\n";
 const std::string ROOM_BROTHER_2_NORTH = "FILLER TEXT\n";
 const std::string ROOM_BROTHER_2_SOUTH = "FILLER TEXT\n";
 const std::string ROOM_BROTHER_2_EAST = "FILLER TEXT\n";
-const std::string ROOM_BROTHER_2_WEST = "FILLER TEXT\n";
 const std::string ROOM_BROTHER_2_NORTHEAST = "FILLER TEXT\n";
-const std::string ROOM_BROTHER_2_NORTHWEST = "FILLER TEXT\n";
 const std::string ROOM_BROTHER_2_SOUTHEAST = "FILLER TEXT\n";
-const std::string ROOM_BROTHER_2_SOUTHWEST = "FILLER TEXT\n";
+const std::string ROOM_BROTHER_3_MIDDLE = "FILLER TEXT\n";
 const std::string ROOM_BROTHER_3_NORTH = "FILLER TEXT\n";
 const std::string ROOM_BROTHER_3_SOUTH = "FILLER TEXT\n";
-const std::string ROOM_BROTHER_3_EAST = "FILLER TEXT\n";
 const std::string ROOM_BROTHER_3_WEST = "FILLER TEXT\n";
-const std::string ROOM_BROTHER_3_NORTHEAST = "FILLER TEXT\n";
 const std::string ROOM_BROTHER_3_NORTHWEST = "FILLER TEXT\n";
-const std::string ROOM_BROTHER_3_SOUTHEAST = "FILLER TEXT\n";
 const std::string ROOM_BROTHER_3_SOUTHWEST = "FILLER TEXT\n";
+
 // Item descriptions
 const std::string ITEM_RUSTED_KNIFE = "A slightly dull rusted knife. Could be useful later...";
 const std::string ITEM_CELL_KEY =
@@ -211,4 +384,21 @@ const std::string ITEM_BLOOD_BOTTLE =
     "blood is calling out, waiting to be consumed.\n";
 const std::string ITEM_GOLD_KEY =
     "The key shines bright against the darkness of this horrid place.\n";
+const std::string ITEM_PATER_ORBIS =
+    "A blood red orb with strange markings. They call it the father orb...";
+const std::string ITEM_FILIUS_ORBIS =
+    "A deep purple orb with strange markings. They call it the son orb...";
+const std::string ITEM_MATER_ORBIS =
+    "A bright blue orb with strange markings. They call it the mother orb...";
+const std::string ITEM_ORBIS_DEI =
+    "The final orb...\nIt's gold glow brigtens the room around you...\nYou "
+    "feel the power...\nYou feel the light...\n";
+const std::string ITEM_MOTHERS_HEART = "A stone shaped heart. It looks like it moved...\n";
+const std::string ITEM_WOODEN_SWORD = "It looks worn, maybe a child once enjoyed this...\n";
+const std::string ITEM_NOTES =
+    "I heard that the mother hides that kid's toy sword somewhere in here when "
+    "he's being annoying...\n";
+const std::string ITEM_TORN_NOTE =
+    "I heard that the mother likes to paint a lot...\nAll of her paintings "
+    "creep me out, it's like they're hiding something...\n";
 } // namespace descriptions

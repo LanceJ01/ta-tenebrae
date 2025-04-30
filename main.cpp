@@ -34,15 +34,18 @@ public:
     std::string death_item;
     std::string post_receive_item_dialogue;
     Item *drop_item = nullptr;
+    Item *give_player_item = nullptr;
     std::vector<Item> inventory;
 
     NPC(const std::string &npc_name, const std::string &npc_description, int npc_health = 5,
         bool is_hostile = false, const std::string &npc_required_item = "",
         const std::string &npc_dialogue = "", const std::string &npc_death_item = "",
-        const std::string &npc_post_receive_item_dialogue = "", Item *npc_drop_item = nullptr)
+        const std::string &npc_post_receive_item_dialogue = "", Item *npc_drop_item = nullptr,
+        Item *npc_give_player_item = nullptr)
         : name(npc_name), description(npc_description), health(npc_health), hostile(is_hostile),
           required_item(npc_required_item), dialogue(npc_dialogue), death_item(npc_death_item),
-          post_receive_item_dialogue(npc_post_receive_item_dialogue), drop_item(npc_drop_item) {}
+          post_receive_item_dialogue(npc_post_receive_item_dialogue), drop_item(npc_drop_item),
+          give_player_item(npc_give_player_item) {}
 
     void talk() const { std::cout << name << ": " << dialogue << "\n\n"; }
 
@@ -93,25 +96,34 @@ public:
 class Chest {
 private:
     bool locked;
-    std::string required_key;
+    std::vector<std::string> required_keys;
     Item contained_item;
     bool opened = false;
 
 public:
-    Chest(const Item &item, const std::string &key = "")
-        : locked(!key.empty()), required_key(to_lowercase(key)), contained_item(item) {}
+    Chest(const Item &item, const std::vector<std::string> &keys = {})
+        : locked(!keys.empty()), contained_item(item) {
+        for (const auto &key : keys) {
+            required_keys.push_back(to_lowercase(key));
+        }
+    }
 
     bool is_locked() const { return locked; }
 
     bool is_opened() const { return opened; }
 
     bool can_unlock(const std::vector<Item> &inventory) const {
+        std::vector<std::string> inventory_keys;
         for (const auto &item : inventory) {
-            if (to_lowercase(item.item_name) == required_key) {
-                return true;
+            inventory_keys.push_back(to_lowercase(item.item_name));
+        }
+        for (const auto &required : required_keys) {
+            if (std::find(inventory_keys.begin(), inventory_keys.end(), required) ==
+                inventory_keys.end()) {
+                return false;
             }
         }
-        return false;
+        return true;
     }
 
     void unlock() { locked = false; }
@@ -121,7 +133,14 @@ public:
         return contained_item;
     }
 
-    std::string get_required_key() const { return required_key; }
+    std::string get_required_key() const {
+        std::string result;
+        for (size_t i = 0; i < required_keys.size(); i++) {
+            result += required_keys[i];
+            if (i != required_keys.size() - 1) result += ", ";
+        }
+        return result;
+    }
 };
 
 class Player {
@@ -350,6 +369,13 @@ void give_item_to_npc(Room *room_current, Player &player, const std::string &ite
             if (!npc->post_receive_item_dialogue.empty()) {
                 std::cout << npc->post_receive_item_dialogue << "\n";
             }
+
+            if (npc->give_player_item != nullptr) {
+                std::cout << npc->name << " gives you a " << npc->give_player_item->item_name
+                          << ".\n\n";
+                player.add_to_inventory(*npc->give_player_item);
+                npc->give_player_item = nullptr;
+            }
         } else {
             std::cout << npc->name << " doesn't want that item.\n\n";
         }
@@ -414,7 +440,15 @@ std::map<std::string, Item> item_library = {
     {"blood-stained key", Item("blood-stained key", descriptions::ITEM_BLOODSTAINED_KEY)},
     {"obsidian dagger", Item("obsidian dagger", descriptions::ITEM_OBSIDIAN_DAGGER)},
     {"blood bottle", Item("blood bottle", descriptions::ITEM_BLOOD_BOTTLE)},
-    {"gold key", Item("gold key", descriptions::ITEM_GOLD_KEY)}};
+    {"gold key", Item("gold key", descriptions::ITEM_GOLD_KEY)},
+    {"pater orbis", Item("pater orbis", descriptions::ITEM_PATER_ORBIS)},
+    {"mater orbis", Item("mater orbis", descriptions::ITEM_MATER_ORBIS)},
+    {"filius orbis", Item("filius orbis", descriptions::ITEM_FILIUS_ORBIS)},
+    {"ORBIS DEI", Item("ORBIS DEI", descriptions::ITEM_ORBIS_DEI)},
+    {"notes", Item("notes", descriptions::ITEM_NOTES)},
+    {"torn note", Item("torn note", descriptions::ITEM_TORN_NOTE)},
+    {"mother's heart", Item("mother's heart", descriptions::ITEM_MOTHERS_HEART)},
+    {"wooden sword", Item("wooden sword", descriptions::ITEM_WOODEN_SWORD)}};
 
 // Functions
 void print_centered(const std::string &text, size_t width = 80) {
@@ -500,42 +534,40 @@ void start_new_game() {
     Room room_cathedral_g7(descriptions::ROOM_CATHEDRAL_G7);
     Room room_cathedral_g8(descriptions::ROOM_CATHEDRAL_G8);
     Room room_cathedral_g9(descriptions::ROOM_CATHEDRAL_G9);
-    Room room_cathedral_g10(descriptions::ROOM_CATHEDRAL_G10);
+    Room room_cathedral_g10(descriptions::ROOM_CATHEDRAL_G10,
+                            descriptions::SEARCH_ROOM_CATHEDRAL_G10);
     Room room_cathedral_g11(descriptions::ROOM_CATHEDRAL_G11);
     Room room_cathedral_g12(descriptions::ROOM_CATHEDRAL_G12);
     Room room_cathedral_g13(descriptions::ROOM_CATHEDRAL_G13);
     Room room_cathedral_g14(descriptions::ROOM_CATHEDRAL_G14);
-    Room room_cathedral_g15(descriptions::ROOM_CATHEDRAL_G15);
+    Room room_cathedral_g15(descriptions::ROOM_CATHEDRAL_G15,
+                            descriptions::SEARCH_ROOM_CATHEDRAL_G15);
     Room room_cathedral_g16(descriptions::ROOM_CATHEDRAL_G16);
     Room room_cathedral_g17(descriptions::ROOM_CATHEDRAL_G17);
     Room room_cathedral_g18(descriptions::ROOM_CATHEDRAL_G18);
-    Room room_cathedral_g19(descriptions::ROOM_CATHEDRAL_G19);
+    Room room_cathedral_g19(descriptions::ROOM_CATHEDRAL_G19,
+                            descriptions::SEARCH_ROOM_CATHEDRAL_G19);
     Room room_cathedral_g20(descriptions::ROOM_CATHEDRAL_G20);
-    Room room_cathedral_g21(descriptions::ROOM_CATHEDRAL_G21);
+    Room room_cathedral_g21(descriptions::ROOM_CATHEDRAL_G21,
+                            descriptions::SEARCH_ROOM_CATHEDRAL_G21);
     Room room_cathedral_g22(descriptions::ROOM_CATHEDRAL_G22);
-    Room room_brother_1_north(descriptions::ROOM_BROTHER_1_NORTH);
+    Room room_brother_1_middle(descriptions::ROOM_BROTHER_1_MIDDLE);
     Room room_brother_1_south(descriptions::ROOM_BROTHER_1_SOUTH);
     Room room_brother_1_west(descriptions::ROOM_BROTHER_1_WEST);
     Room room_brother_1_east(descriptions::ROOM_BROTHER_1_EAST);
-    Room room_brother_1_northeast(descriptions::ROOM_BROTHER_1_NORTHEAST);
-    Room room_brother_1_northwest(descriptions::ROOM_BROTHER_1_NORTHWEST);
     Room room_brother_1_southeast(descriptions::ROOM_BROTHER_1_SOUTHEAST);
     Room room_brother_1_southwest(descriptions::ROOM_BROTHER_1_SOUTHWEST);
+    Room room_brother_2_middle(descriptions::ROOM_BROTHER_2_MIDDLE);
     Room room_brother_2_north(descriptions::ROOM_BROTHER_2_NORTH);
     Room room_brother_2_south(descriptions::ROOM_BROTHER_2_SOUTH);
-    Room room_brother_2_west(descriptions::ROOM_BROTHER_2_WEST);
     Room room_brother_2_east(descriptions::ROOM_BROTHER_2_EAST);
     Room room_brother_2_northeast(descriptions::ROOM_BROTHER_2_NORTHEAST);
-    Room room_brother_2_northwest(descriptions::ROOM_BROTHER_2_NORTHWEST);
     Room room_brother_2_southeast(descriptions::ROOM_BROTHER_2_SOUTHEAST);
-    Room room_brother_2_southwest(descriptions::ROOM_BROTHER_2_SOUTHWEST);
+    Room room_brother_3_middle(descriptions::ROOM_BROTHER_3_MIDDLE);
     Room room_brother_3_north(descriptions::ROOM_BROTHER_3_NORTH);
     Room room_brother_3_south(descriptions::ROOM_BROTHER_3_SOUTH);
     Room room_brother_3_west(descriptions::ROOM_BROTHER_3_WEST);
-    Room room_brother_3_east(descriptions::ROOM_BROTHER_3_EAST);
-    Room room_brother_3_northeast(descriptions::ROOM_BROTHER_3_NORTHEAST);
     Room room_brother_3_northwest(descriptions::ROOM_BROTHER_3_NORTHWEST);
-    Room room_brother_3_southeast(descriptions::ROOM_BROTHER_3_SOUTHEAST);
     Room room_brother_3_southwest(descriptions::ROOM_BROTHER_3_SOUTHWEST);
 
     // Starting Room Area Items, Doors, Chests
@@ -649,7 +681,7 @@ void start_new_game() {
     // Items and Chests in Prison Room
     room_prison_2_northeast.add_item(item_library["blood-stained key"]);
     room_prison_2_northeast.revealed_item_name = "blood-stained key";
-    Chest chest_pr_2(item_library["obsidian dagger"], "blood-stained key");
+    Chest chest_pr_2(item_library["obsidian dagger"], {"blood-stained key"});
     room_prison_2_northwest.add_chest(&chest_pr_2);
 
     // Prison Room 2, Torture Chamber
@@ -695,6 +727,47 @@ void start_new_game() {
     room_cathedral_g6.add_door("west", Door("gold key"));
     room_cathedral_g14.add_door("east", Door("gold key"));
     room_cathedral_g1.add_door("north", Door("gold key"));
+    Chest chest_c1(item_library["ORBIS DEI"], {"pater orbis", "mater orbis", "filius orbis"});
+    room_cathedral_g10.add_chest(&chest_c1);
+    Chest chest_c2(item_library["mother's heart"], {""});
+    room_cathedral_g15.add_chest(&chest_c2);
+    Chest chest_c3(item_library["wooden sword"], {""});
+    room_cathedral_g19.add_chest(&chest_c3);
+
+    // NPCS
+    NPC masked_figure_2("Masked Figure", "A masked figure stands there motionless...", 5, false,
+                        "blood bottle", "The room named Filius contains the son...", "blood bottle",
+                        "The masked figure lifts the blood bottle overhead and lets out a "
+                        "bone-chilling screech that echoes through the chamber.\nThe masked "
+                        "figure drinks the whole bottle...\n",
+                        &item_library["notes"], nullptr);
+    room_cathedral_g6.add_npc(masked_figure_2);
+    NPC masked_figure_4("Masked Figure", "A masked figure stands there motionless...", 5, false,
+                        "blood bottle", "The room named Mater houses the mother...", "blood bottle",
+                        "The masked figure lifts the blood bottle overhead and lets out a "
+                        "bone-chilling screech that echoes through the chamber.\nThe masked "
+                        "figure drinks the whole bottle...\n",
+                        &item_library["torn note"], nullptr);
+    room_cathedral_g14.add_npc(masked_figure_4);
+    NPC masked_figure_3("Masked Figure", "A masked figure stands there motionless...", 5, false,
+                        "blood bottle", "WORSHIP THY PATER!", "blood bottle",
+                        "The masked figure lifts the blood bottle overhead and lets out a "
+                        "bone-chilling screech that echoes through the chamber.\nThe masked "
+                        "figure drinks the whole bottle...\n",
+                        nullptr, nullptr);
+    room_cathedral_g1.add_npc(masked_figure_3);
+    NPC masked_priest("Masked Priest",
+                      "The priest stands in silence, his while robes soaked through with "
+                      "blood. A gold mask hides his face. You see nothing in his eyes as they "
+                      "stare at you...\n",
+                      5, false, "blood bottle",
+                      "Pater Orbis - the eye that judges!\nMater Orbis - the heart that "
+                      "grieves!\nFilius Orbis - the hand that strikes!\nEach must be "
+                      "fed.\nOnly through blood does their silence speak.\nOnly through "
+                      "sacrifice, the cycle will be complete.",
+                      "blood bottle", "Yes. The sacred blood! Drink this with me my brothers!",
+                      &item_library["blood necklace"], nullptr);
+    room_cathedral_g10.add_npc(masked_priest);
 
     // Cathedral Room
     room_cathedral_g21.add_room_exit("south", &room_prison_hallway_12);
@@ -759,6 +832,57 @@ void start_new_game() {
     room_cathedral_g6.add_room_exit("west", &room_brother_2_east);
     room_cathedral_g1.add_room_exit("north", &room_brother_1_south);
     room_cathedral_g14.add_room_exit("east", &room_brother_3_west);
+
+    // Room 2
+    room_brother_2_east.add_room_exit("east", &room_cathedral_g6);
+    room_brother_2_east.add_room_exit("north", &room_brother_2_northeast);
+    room_brother_2_east.add_room_exit("south", &room_brother_2_southeast);
+    room_brother_2_east.add_room_exit("west", &room_brother_2_middle);
+    room_brother_2_northeast.add_room_exit("south", &room_brother_2_east);
+    room_brother_2_northeast.add_room_exit("west", &room_brother_2_north);
+    room_brother_2_southeast.add_room_exit("north", &room_brother_2_east);
+    room_brother_2_southeast.add_room_exit("west", &room_brother_2_south);
+    room_brother_2_middle.add_room_exit("east", &room_brother_2_east);
+    room_brother_2_middle.add_room_exit("north", &room_brother_2_north);
+    room_brother_2_middle.add_room_exit("south", &room_brother_2_south);
+    room_brother_2_south.add_room_exit("north", &room_brother_2_middle);
+    room_brother_2_south.add_room_exit("east", &room_brother_2_southeast);
+    room_brother_2_north.add_room_exit("east", &room_brother_2_northeast);
+    room_brother_2_north.add_room_exit("south", &room_brother_2_middle);
+
+    // Room 3
+    room_brother_3_west.add_room_exit("west", &room_cathedral_g14);
+    room_brother_3_west.add_room_exit("north", &room_brother_3_northwest);
+    room_brother_3_west.add_room_exit("south", &room_brother_3_southwest);
+    room_brother_3_west.add_room_exit("east", &room_brother_3_middle);
+    room_brother_3_southwest.add_room_exit("north", &room_brother_3_west);
+    room_brother_3_southwest.add_room_exit("east", &room_brother_3_south);
+    room_brother_3_south.add_room_exit("west", &room_brother_3_southwest);
+    room_brother_3_south.add_room_exit("north", &room_brother_3_middle);
+    room_brother_3_middle.add_room_exit("west", &room_brother_3_west);
+    room_brother_3_middle.add_room_exit("north", &room_brother_3_north);
+    room_brother_3_middle.add_room_exit("south", &room_brother_3_south);
+    room_brother_3_northwest.add_room_exit("south", &room_brother_3_west);
+    room_brother_3_northwest.add_room_exit("east", &room_brother_3_north);
+    room_brother_3_north.add_room_exit("west", &room_brother_3_northwest);
+    room_brother_3_north.add_room_exit("south", &room_brother_3_middle);
+
+    // Room 1
+    room_brother_1_south.add_room_exit("south", &room_cathedral_g1);
+    room_brother_1_south.add_room_exit("west", &room_brother_1_southwest);
+    room_brother_1_south.add_room_exit("east", &room_brother_1_southeast);
+    room_brother_1_south.add_room_exit("north", &room_brother_1_middle);
+    room_brother_1_southwest.add_room_exit("east", &room_brother_1_south);
+    room_brother_1_southwest.add_room_exit("north", &room_brother_1_west);
+    room_brother_1_southeast.add_room_exit("west", &room_brother_1_south);
+    room_brother_1_southeast.add_room_exit("north", &room_brother_1_east);
+    room_brother_1_middle.add_room_exit("south", &room_brother_1_south);
+    room_brother_1_middle.add_room_exit("west", &room_brother_1_west);
+    room_brother_1_middle.add_room_exit("east", &room_brother_1_east);
+    room_brother_1_west.add_room_exit("east", &room_brother_1_middle);
+    room_brother_1_west.add_room_exit("south", &room_brother_1_southwest);
+    room_brother_1_east.add_room_exit("west", &room_brother_1_middle);
+    room_brother_1_east.add_room_exit("south", &room_brother_1_southeast);
 
     // Player's current Room
     Room *room_current = &room_start;
