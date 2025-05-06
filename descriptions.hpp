@@ -395,7 +395,7 @@ const std::string SEARCH_ROOM_CATHEDRAL_G15 =
     "@@@@@@@@%@@@@@@@@@@@@@@@@@\n"
     "\033[0m";
 const std::string ROOM_CATHEDRAL_G16 = "You walk through the pews\n";
-const std::string ROOM_CATHEDRAL_G17 = "You walk down the isle of the Cathedral.\n";
+const std::string ROOM_CATHEDRAL_G17 = "You walk down the aisle of the Cathedral.\n";
 const std::string ROOM_CATHEDRAL_G18 = "You walk through the pews\n";
 const std::string ROOM_CATHEDRAL_G19 = "You see a painting of a boy holding wooden sword...\n";
 const std::string SEARCH_ROOM_CATHEDRAL_G19 =
@@ -467,7 +467,8 @@ const std::string ROOM_BROTHER_1_EAST = "Bowls of blood line the walls...\n";
 const std::string ROOM_BROTHER_1_WEST = "Stacks of skulls line the walls...\n";
 const std::string ROOM_BROTHER_1_SOUTHEAST = "A blood-fountain sits on the corner of the room...\n";
 const std::string ROOM_BROTHER_1_SOUTHWEST = "You stand next to a brazier...\n";
-const std::string ROOM_BROTHER_2_MIDDLE = "You stand next to toys covered in blood...\n";
+const std::string ROOM_BROTHER_2_MIDDLE =
+    "You stand next to the son's belongings covered in blood...\n";
 const std::string ROOM_BROTHER_2_NORTH = "You stand next to empty shelves...\n";
 const std::string ROOM_BROTHER_2_SOUTH = "You stand next to the SOUTH wall...\n";
 const std::string ROOM_BROTHER_2_EAST = "You stand on the EAST entrance of the room...\n";
@@ -513,7 +514,7 @@ const std::string ITEM_MOTHERS_HEART = "A stone shaped heart. It looks like it m
 const std::string ITEM_WOODEN_SWORD = "It looks worn, maybe a child once enjoyed this...\n";
 const std::string ITEM_BLOOD_NECKLACE = "The necklace hold a vial of blood...\n";
 const std::string ITEM_NOTES =
-    "I heard that the mother hides that kid's toy sword somewhere in here when "
+    "I heard that the mother hides her son's sword somewhere in here when "
     "he's being annoying...\n";
 const std::string ITEM_TORN_NOTE =
     "I heard that the mother likes to paint a lot...\nAll of her paintings "

@@ -772,7 +772,7 @@ void start_new_game() {
                         nullptr, nullptr);
     room_cathedral_g1.add_npc(masked_figure_3);
     NPC masked_priest("Masked Priest",
-                      "The priest stands in silence, his while robes soaked through with "
+                      "The priest stands in silence, his white robes soaked through with "
                       "blood. A gold mask hides his face. You see nothing in his eyes as they "
                       "stare at you...\nYou also notice a necklace, with a blood vial dangling "
                       "from his neck...\n",
@@ -853,7 +853,7 @@ void start_new_game() {
 
     // NPC
 
-    NPC filius("The boy", "The boy sits in the middle of his room, looking for something...\n", 5,
+    NPC filius("The son", "The son sits in the middle of his room, looking for something...\n", 5,
                false, "wooden sword",
                "Please help me, I've lost my wooden sword! If you find it, I can give "
                "you something in return.",
